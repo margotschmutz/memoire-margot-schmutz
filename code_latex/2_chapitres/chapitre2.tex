@@ -6,6 +6,8 @@ Au sein de Forsides, le modèle d'ALM s'appelle SALLTO (Solvency Asset Liability
 
 Pour fonctionner, le modèle nécessite un fichier d'input dans lequel sont renseignées différentes hypothèses. Ces hypothèses concernent à la fois l'actif et le passif, ainsi que la politique de gestion de la compagnie d'assurance étudiée. Le fichier d'entrée inclut également les scénarios économiques, générés indépendamment par le générateur de scénarios économiques (GSE), qui servent de base aux projections réalisées par le modèle.
 
+
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{images/2_chapitres/chapitre2/Schema_SALLTO.png}
@@ -28,15 +30,13 @@ Etapes de fonctionnement
 
 \subsection{Définition de la variable cible et des variables explicatives retenues}
 
-L'objectif principal de ce mémoire est de comprendre et d'expliquer les mécanismes conduisant aux différences de valorisation entre un BE déterministe et un BE stochastique. L'enjeu n'est pas de comparer ces deux approches d'un point de vue normatif, mais d'analyser les facteurs qui contribuent aux écarts observés, afin d'en améliorer la traçabilité, la justification et la compréhension dans un cadre réglementaire. Afin d'aborder la problématique sous des angles complémentaires, deux bases de données distinctes ont été construites. Elles reposent sur un même socle de données explicatives, mais se distinguent par le choix de la variable cible.
+L'objectif principal de ce mémoire est de comprendre et d'expliquer les mécanismes conduisant aux différences de valorisation entre un BE déterministe et un BE stochastique. L'enjeu n'est pas de comparer ces deux approches d'un point de vue normatif, mais d'analyser les facteurs qui contribuent aux écarts observés, afin d'en améliorer la traçabilité, la justification et la compréhension dans un cadre réglementaire. Afin d'aborder la problématique, une base de données a été construite. Elle est composée de 9 variables explicatives : courbe de taux, spread, volatilité des taux, volatilité des actions, garanti de taux, taux de plus value actions, rachats conjoncturels, duration et TMG.
 
-La première base de données consiste à considérer le BE stochastique comme variable à expliquer, à partir d'un ensemble de variables explicatives majoritairement liées au passif, incluant notamment des éléments issus du cadre déterministe. Cette approche permet d'évaluer dans quelle mesure les caractéristiques du portefeuille et les hypothèses déterministes contribuent à la formation du niveau du BE stochastique.
+La base de données adopte une approche centrée sur l'analyse des écarts, en définissant comme variable cible la différence entre le Best Estimate stochastique et le Best Estimate déterministe divisée par la somme des PM. Cette formulation vise à isoler et à analyser plus directement les facteurs expliquant les divergences entre les deux valorisations en pourcentage pour que ce soit généralisable, en mettant en évidence les effets liés à la prise en compte de l'incertitude, des non-linéarités et des options financières.
 
-La seconde base de données adopte une approche centrée sur l'analyse des écarts, en définissant comme variable cible la différence entre le Best Estimate stochastique et le Best Estimate déterministe. Cette formulation vise à isoler et à analyser plus directement les facteurs expliquant les divergences entre les deux valorisations, en mettant en évidence les effets liés à la prise en compte de l'incertitude, des non-linéarités et des options financières.
+Cette approche s'inscrit dans une démarche de transparence et de gouvernance des modèles, en cohérence avec les exigences de Solvabilité II.
 
-L'utilisation conjointe de ces deux approches permet ainsi de proposer une lecture actuarielle approfondie des résultats, en apportant des éléments de compréhension sur le passage du BE déterministe au BE stochastique. Elle s'inscrit dans une démarche de transparence et de gouvernance des modèles, en cohérence avec les exigences de Solvabilité II.
-
-Les variables explicatives retenues sont majoritairement liées aux caractéristiques du passif, conformément à l'objectif du mémoire, qui vise à analyser les écarts de valorisation du point de vue des engagements d'assurance.
+Les variables explicatives retenues sont majoritairement liées aux caractéristiques du passif, conformément à l'objectif du mémoire, qui vise à analyser les écarts de valorisation du point de vue des engagements d'assurance. Pour les sélectionner, nous avons réalisé une étude de sensiibilités sur plusieurs variables afinde garder que les variables les plus impactantes sur la TVOG. Les variables sur lesquelles nous avons fait des sensibilités sont les suivantes: taux servi, rachats conjoncturels, rachats structurels, âge des assurés, taux minimal garanti, ancienneté des contrats et courbe de taux utilisée pour la valorisation de l'actif. En complément de ces variables issues des sensibilités, le Best Estimate déterministe est également intégré au jeu de données en tant que variable explicative. Il constitue une synthèse des caractéristiques du portefeuille et des hypothèses retenues dans le cadre déterministe, et permet de capturer une part importante de l'information expliquant le niveau du Best Estimate stochastique.
 
 \subsection{Construction de la base de données}
 
