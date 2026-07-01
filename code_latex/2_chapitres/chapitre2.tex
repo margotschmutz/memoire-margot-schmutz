@@ -36,7 +36,13 @@ La base de données adopte une approche centrée sur l'analyse des écarts, en d
 
 Cette approche s'inscrit dans une démarche de transparence et de gouvernance des modèles, en cohérence avec les exigences de Solvabilité II.
 
-Les variables explicatives retenues sont majoritairement liées aux caractéristiques du passif, conformément à l'objectif du mémoire, qui vise à analyser les écarts de valorisation du point de vue des engagements d'assurance. Pour les sélectionner, nous avons réalisé une étude de sensiibilités sur plusieurs variables afinde garder que les variables les plus impactantes sur la TVOG. Les variables sur lesquelles nous avons fait des sensibilités sont les suivantes: taux servi, rachats conjoncturels, rachats structurels, âge des assurés, taux minimal garanti, ancienneté des contrats et courbe de taux utilisée pour la valorisation de l'actif. En complément de ces variables issues des sensibilités, le Best Estimate déterministe est également intégré au jeu de données en tant que variable explicative. Il constitue une synthèse des caractéristiques du portefeuille et des hypothèses retenues dans le cadre déterministe, et permet de capturer une part importante de l'information expliquant le niveau du Best Estimate stochastique.
+Les variables explicatives retenues sont majoritairement liées aux caractéristiques du passif, conformément à l'objectif du mémoire, qui vise à analyser les écarts de valorisation du point de vue des engagements d'assurance. Pour les sélectionner, nous avons réalisé deux études de sensiibilités sur plusieurs variables afin de garder que les variables les plus impactantes sur la TVOG. La première étude de sensibilité a été réalisée avec la courbe des taux au 31/12/2025 et la seconde a été réalisée avec la courbe des taux au 31/12/2021. Nous avons choisi la courbe des taux au 31/12/2021 car c'est une courbe des taux basse ce qui nous permettra de mettre en lumiere l'impact de certaines variables qui peut être amplifié par un environnement de taux bas.
+
+Les variables sur lesquelles nous avons fait les sensibilités sont les suivantes : la volatilité des taux, la volatilité des actions, les rachat conjoncturels, les rachats structurels, l'age des assurés, le taux minimal garanti, l'inflation, la participation aux bénéfices, la garantie de taux, les chargements, les plus values sur les actions, le spread et la courbe des taux.
+
+La variable duration est une variable que nous avons construit avec la variable age des assurés et rachats structurels combinés. 
+
+A la suite de ces deux études de sensibilités, nous avons choisi de ne garder que les variables les plus impactantes sur la TVOG. Les variables retenues sont : la courbe des taux, le spread, la volatilité des taux, la volatilité des actions, le garanti de taux, le taux de plus value actions, les rachats conjoncturels, la duration et le TMG.
 
 \subsection{Construction de la base de données}
 
