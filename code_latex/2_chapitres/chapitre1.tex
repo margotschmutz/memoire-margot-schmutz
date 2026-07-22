@@ -1,55 +1,460 @@
-\chapter{Cadre théorique et réglementaire du régime Solvabilité II}
-\label{chap:contexte}
-\newpage
-\section{Solvabilité II : principes et objectifs}
-\label{sec:spec_av}
+\chapter{Cadre prudentiel et réglementaire de la valorisation du Best Estimate}
 
-\subsection{Historique de la directive européenne}
+Le présent chapitre expose les éléments du régime Solvabilité~II nécessaires à
+la compréhension de la problématique étudiée. Après avoir rappelé la logique
+générale du dispositif et son architecture en trois piliers, il présente la
+place du \textit{Best Estimate} dans le bilan prudentiel. Une attention
+particulière est ensuite accordée aux différences entre méthodes déterministes
+et stochastiques, à la valorisation des options et garanties ainsi qu'aux
+exigences de gouvernance et de traçabilité. Enfin, les évolutions issues de la
+revue récente de Solvabilité~II sont précisées lorsqu'elles présentent un lien
+direct avec le sujet du mémoire.
 
-\subsection{Les trois piliers de S2: exigences de capital, gouvernance, et transparence}
+\section{Solvabilité II : principes, objectifs et architecture}
+
+\subsection{De Solvabilité I à une approche fondée sur les risques}
+
+La directive 2009/138/CE, dite Solvabilité~II, a instauré un cadre prudentiel
+harmonisé pour les entreprises d'assurance et de réassurance de l'Union
+européenne. Adoptée en 2009 et entrée en application le
+1\textsuperscript{er} janvier 2016, elle a remplacé un dispositif dans lequel
+les exigences de solvabilité reposaient principalement sur des grandeurs
+comptables et des coefficients proportionnels au volume d'activité. Le nouveau
+régime adopte une approche économique et fondée sur les risques, dont
+l'objectif premier est d'assurer une protection adéquate des preneurs et des
+bénéficiaires.
+
+Cette évolution se traduit par trois principes structurants. Premièrement, les
+actifs et les passifs sont évalués selon une approche économique, cohérente avec
+les conditions de marché. Deuxièmement, le capital requis dépend de la nature
+et de l'intensité des risques effectivement supportés par l'organisme.
+Troisièmement, les exigences quantitatives sont complétées par des règles de
+gouvernance, de gestion des risques, de contrôle interne et de communication
+financière.
+
+Le bilan prudentiel diffère donc du bilan établi selon les normes comptables.
+Les actifs sont, en principe, valorisés au montant auquel ils pourraient être
+échangés dans le cadre d'une transaction conclue dans des conditions normales
+de concurrence. Les passifs sont évalués au montant auquel ils pourraient être
+transférés ou réglés dans les mêmes conditions. Pour les engagements
+d'assurance, cette logique conduit à une valorisation prospective des flux
+futurs et non à la seule reprise des provisions comptables historiques.
+
+\subsection{Une architecture en trois piliers}
+
+Le cadre Solvabilité~II est organisé autour de trois piliers complémentaires.
+
+Le \textbf{pilier 1} regroupe les exigences quantitatives. Il définit les règles
+de valorisation des actifs et des passifs, le calcul des provisions techniques,
+la détermination des fonds propres ainsi que les exigences de capital. Deux
+niveaux de capital sont notamment distingués : le \textit{Solvency Capital
+Requirement} (SCR) et le \textit{Minimum Capital Requirement} (MCR). Le
+\textit{Best Estimate} étudié dans ce mémoire relève directement de ce premier
+pilier.
+
+Le \textbf{pilier 2} porte sur le système de gouvernance et la gestion des
+risques. Il impose notamment des fonctions clés, un système de contrôle interne,
+une fonction de gestion des risques et la réalisation régulière d'une
+évaluation interne des risques et de la solvabilité, ou ORSA
+(\textit{Own Risk and Solvency Assessment}). Ce pilier exige que les méthodes,
+les hypothèses et les limites des modèles utilisés soient comprises et
+documentées. La capacité à expliquer les écarts entre deux méthodes de
+valorisation s'inscrit donc également dans cette dimension qualitative.
+
+Le \textbf{pilier 3} concerne la communication d'informations à l'autorité de
+contrôle et au public. Il comprend notamment le reporting prudentiel, le rapport
+régulier au contrôleur et le rapport sur la solvabilité et la situation
+financière. La transparence sur les bases, les méthodes et les principales
+hypothèses de valorisation des provisions techniques constitue un élément
+important de ces publications.
+
+Ces trois piliers ne doivent pas être considérés isolément. Une valorisation
+quantitative conforme au pilier~1 doit reposer sur une gouvernance robuste au
+titre du pilier~2 et être accompagnée d'une information suffisamment claire et
+traçable dans le cadre du pilier~3. Cette articulation justifie l'intérêt d'une
+analyse qui ne se limite pas à produire un montant de \textit{Best Estimate},
+mais cherche également à comprendre les facteurs à l'origine de ce montant et
+de ses variations.
+
+\subsection{Le ratio de solvabilité et la place du Best Estimate}
+
+Les organismes doivent détenir des fonds propres éligibles suffisants pour
+couvrir leur SCR. Le ratio de couverture du SCR,
+couramment appelé ratio de solvabilité, s'écrit :
+\[
+    \text{Ratio de solvabilité}
+    =
+    \frac{\text{Fonds propres éligibles au SCR}}
+         {\text{SCR}}.
+\]
+Un ratio égal à \(100\,\%\) signifie que les fonds propres éligibles sont
+exactement égaux au capital requis. Le SCR est calibré afin de correspondre à
+une valeur en risque des fonds propres de base avec un niveau de confiance de
+\(99{,}5\,\%\) sur un horizon d'un an.
+
+Le \textit{Best Estimate} intervient principalement au numérateur de ce ratio,
+par l'intermédiaire du bilan économique. Toutes choses égales par ailleurs, une
+hausse du \textit{Best Estimate} augmente les provisions techniques, réduit
+l'excédent des actifs sur les passifs et diminue ainsi les fonds propres de
+base. Sa valorisation peut également influencer certains modules du SCR et les
+mécanismes d'absorption des pertes par les provisions techniques. La maîtrise
+de son niveau et de sa sensibilité constitue donc un enjeu de pilotage
+prudentiel, même lorsque l'objet de l'étude n'est pas directement la prédiction
+du ratio de solvabilité.
+
+\section{La valorisation des provisions techniques}
+
+\subsection{Une valorisation économique des engagements}
+
+L'article~76 de la directive Solvabilité~II prévoit que la valeur des
+provisions techniques corresponde au montant actuel qu'une entreprise
+d'assurance devrait payer si elle transférait immédiatement ses engagements à
+une autre entreprise. Leur calcul doit être cohérent avec les informations
+fournies par les marchés financiers, prudent, fiable et objectif.
+
+Lorsque les flux associés aux engagements ne peuvent pas être répliqués de
+manière fiable à l'aide d'instruments financiers disposant d'une valeur de
+marché observable, les provisions techniques sont calculées comme la somme du
+\textit{Best Estimate} et de la marge de risque :
+\[
+    PT = BE + RM,
+\]
+où \(PT\) désigne les provisions techniques, \(BE\) le
+\textit{Best Estimate} et \(RM\) la marge de risque.
+
+Le \textit{Best Estimate} représente la valeur actualisée moyenne des flux
+futurs nécessaires au règlement des engagements. La marge de risque correspond
+au coût du capital qu'une entreprise de référence devrait supporter pour
+reprendre et honorer ces engagements jusqu'à leur extinction. Le présent
+mémoire porte sur le premier de ces deux éléments.
+
+\subsection{Définition réglementaire du Best Estimate}
+
+L'article~77 de la directive définit le \textit{Best Estimate} comme la moyenne
+pondérée par leur probabilité des flux de trésorerie futurs, compte tenu de la
+valeur temporelle de l'argent et de la courbe des taux sans risque pertinente. De manière schématique, il peut être représenté
+par :
+\[
+    BE =
+    \mathbb{E}\left[
+        \sum_{t=1}^{T}
+        D(0,t)\,CF_t
+    \right],
+\]
+où \(CF_t\) désigne le flux net associé aux engagements à la date \(t\),
+\(D(0,t)\) le facteur d'actualisation entre la date de valorisation et la date
+\(t\), et \(T\) l'horizon d'extinction du portefeuille.
+
+Cette écriture met en évidence trois dimensions essentielles. Le calcul est
+\textbf{prospectif}, puisqu'il repose sur les flux futurs et non uniquement sur
+des données passées. Il est \textbf{actualisé}, afin de prendre en compte la
+valeur temporelle de l'argent. Enfin, il est \textbf{probabilisé}, car il doit
+intégrer la distribution des résultats futurs et pas seulement une trajectoire
+centrale lorsque celle-ci ne suffit pas à représenter les risques.
+
+Le calcul doit reposer sur des informations actualisées et crédibles, des
+hypothèses réalistes ainsi que des méthodes actuarielles et statistiques
+adéquates, applicables et pertinentes. La projection doit prendre en compte
+l'ensemble des entrées et sorties de trésorerie nécessaires au règlement des
+engagements pendant toute leur durée. Le \textit{Best Estimate} est calculé
+brut de réassurance, les montants recouvrables au titre des contrats de
+réassurance étant évalués séparément.
+
+\subsection{Flux projetés et hypothèses de calcul}
+
+Le règlement délégué (UE) 2015/35 précise les principes de projection des flux
+utilisés pour déterminer le \textit{Best Estimate}. Ceux-ci comprennent notamment les prestations dues
+aux assurés et aux bénéficiaires, les primes futures incluses dans la frontière
+des contrats, les frais nécessaires à la gestion des engagements et les
+paiements liés aux options contractuelles.
+
+Les hypothèses utilisées doivent représenter de manière cohérente les facteurs
+susceptibles d'affecter les flux futurs. Dans le cas d'un portefeuille
+d'assurance vie, elles portent notamment sur :
+
+\begin{itemize}
+    \item la mortalité et la longévité ;
+    \item les rachats et les autres comportements des assurés ;
+    \item les frais futurs ;
+    \item les rendements financiers et l'évolution des actifs ;
+    \item les garanties contractuelles ;
+    \item la participation future aux bénéfices ;
+    \item les actions futures de management.
+\end{itemize}
+
+Les actions futures de management peuvent par exemple concerner l'allocation
+d'actifs, la réalisation de plus-values latentes ou la politique de
+revalorisation des contrats. Elles ne peuvent pas être introduites librement
+dans les projections : elles doivent être réalistes, cohérentes avec les
+pratiques de l'entreprise et formalisées dans un plan approuvé. De même, les
+hypothèses de comportement des assurés doivent tenir compte de la façon dont
+ceux-ci peuvent réagir aux conditions économiques, notamment à l'écart entre le
+taux servi par le contrat et les rendements proposés par des placements
+concurrents.
+
+La frontière des contrats détermine les flux futurs qui appartiennent aux
+engagements existants à la date de valorisation. Cette délimitation est
+essentielle, car elle conditionne les primes, prestations et frais intégrés dans
+le calcul. Enfin, les données doivent être appropriées, complètes et exactes.
+Le recours à des approximations est possible lorsque les données sont
+insuffisantes, mais il doit être justifié et ne pas résulter de défaillances des
+processus internes de collecte ou de validation.
+
+\section{Approches déterministe et stochastique}
+
+\subsection{Deux méthodes au service d'un même objectif prudentiel}
+
+La réglementation impose le calcul d'une meilleure estimation probabilisée ;
+elle n'érige pas le \textit{Best Estimate} déterministe et le
+\textit{Best Estimate} stochastique en deux mesures prudentielles concurrentes.
+Le choix de la méthode doit être adapté à la nature des engagements et aux
+risques affectant les flux. Le règlement délégué exige que le calcul soit
+réalisé de manière transparente, que la méthode et ses résultats puissent être
+revus par un expert qualifié et que les dépendances des flux à l'égard
+d'événements futurs soient correctement reflétées.
+
+Une méthode déterministe peut être pertinente lorsque les flux sont peu
+sensibles à la dispersion des variables économiques ou lorsque les relations
+sont suffisamment linéaires. À l'inverse, une méthode stochastique devient
+nécessaire lorsque la valeur des flux dépend de manière importante de
+l'ensemble des trajectoires possibles, en particulier en présence d'options,
+de garanties ou d'actions de gestion dynamiques.
+
+\subsection{Le Best Estimate déterministe}
+
+Le \textit{Best Estimate} déterministe est obtenu en projetant le portefeuille
+selon une trajectoire économique unique, généralement construite à partir
+d'hypothèses centrales. Il peut être représenté de manière simplifiée par :
+\[
+    BE_{\mathrm{det}}
+    =
+    \sum_{t=1}^{T}
+    D^{\mathrm{det}}(0,t)\,
+    CF_t^{\mathrm{det}}.
+\]
+
+Cette méthode permet une lecture directe de l'évolution du portefeuille et se
+prête facilement aux analyses de sensibilité. Son coût de calcul est limité,
+puisqu'une seule trajectoire est projetée. Elle fournit ainsi un point de
+comparaison utile et peut synthétiser une part importante des caractéristiques
+du portefeuille.
+
+Sa principale limite provient de l'utilisation d'un scénario unique. Lorsque
+les flux futurs sont une fonction non linéaire d'une variable économique
+aléatoire \(X\), la relation suivante est généralement vérifiée :
+\[
+    \mathbb{E}\!\left[f(X)\right]
+    \neq
+    f\!\left(\mathbb{E}[X]\right).
+\]
+La projection du scénario moyen ne restitue alors pas nécessairement la
+moyenne des valeurs obtenues dans l'ensemble des scénarios. Cette différence
+est au cœur de la valeur temps des options et garanties.
+
+\subsection{Le Best Estimate stochastique}
+
+L'approche stochastique repose sur un ensemble de scénarios économiques
+représentant différentes évolutions possibles des variables financières. Pour
+chaque scénario, le modèle ALM projette les actifs, les passifs, les décisions
+de gestion et les comportements des assurés. Le \textit{Best Estimate}
+stochastique est ensuite estimé par la moyenne des valeurs actualisées :
+\[
+    \widehat{BE}_{\mathrm{sto}}
+    =
+    \frac{1}{N}
+    \sum_{n=1}^{N}
+    \left[
+        \sum_{t=1}^{T}
+        D^{(n)}(0,t)\,
+        CF_t^{(n)}
+    \right],
+\]
+où \(N\) désigne le nombre de scénarios économiques.
+
+Cette approche permet de représenter les interactions entre les variables
+financières et les mécanismes propres aux contrats. Elle tient notamment compte
+du fait qu'une garantie produit un coût dans les scénarios défavorables sans
+que l'assureur bénéficie nécessairement de manière symétrique des scénarios
+favorables. Elle permet également de modéliser les politiques de participation
+aux bénéfices, les réalisations de plus-values, les arbitrages d'allocation et
+les rachats dynamiques.
+
+La qualité du résultat dépend toutefois de plusieurs éléments : le calibrage du
+générateur de scénarios économiques, le nombre de simulations, les hypothèses
+de comportement, les règles de gestion et la stabilité numérique du modèle.
+Le calcul est donc plus riche, mais également plus coûteux et plus difficile à
+analyser qu'une projection déterministe.
+
+\subsection{Options, garanties et valeur temps}
+
+Le règlement délégué impose de prendre en compte toutes les garanties
+financières et options contractuelles incluses dans les contrats, ainsi que les
+facteurs susceptibles d'influencer leur exercice par les assurés. Pour un portefeuille d'assurance vie, il peut
+notamment s'agir :
+
+\begin{itemize}
+    \item d'un taux minimum garanti ;
+    \item d'un mécanisme de participation aux bénéfices ;
+    \item d'une garantie en capital ;
+    \item d'une option de rachat ;
+    \item d'une faculté d'arbitrage entre supports ;
+    \item d'une option de conversion ou de prorogation.
+\end{itemize}
+
+La valeur intrinsèque d'une garantie correspond à son coût dans la situation
+économique observée à la date de valorisation. Sa valeur temps traduit le coût
+supplémentaire lié à l'incertitude sur les évolutions futures et à la
+possibilité que la garantie devienne plus contraignante dans certains
+scénarios. Dans le cadre opérationnel retenu dans ce mémoire, la TVOG est
+approchée par la différence :
+\[
+    TVOG =
+    BE_{\mathrm{sto}}-BE_{\mathrm{det}}.
+\]
+
+Cette définition doit être comprise dans le périmètre et avec les conventions
+du modèle utilisé. Elle dépend notamment du scénario déterministe de référence,
+des règles de participation aux bénéfices et des actions de management
+modélisées. L'écart ne constitue donc pas une constante propre au portefeuille :
+il varie avec l'environnement économique, les caractéristiques des contrats et
+la politique de gestion de l'assureur.
+
+Les facteurs étudiés dans la base de données reflètent précisément ces
+mécanismes. Une courbe de taux basse peut accroître le coût des garanties et
+réduire les marges financières disponibles. Une augmentation de la volatilité
+peut renforcer la valeur temps d'une option en élargissant la distribution des
+résultats futurs. Le niveau des spreads, les plus-values latentes, la duration
+du passif, les rachats et le taux minimum garanti modifient également la
+capacité de l'assureur à servir ses engagements dans les différents scénarios.
+L'analyse de leur effet conjoint nécessite donc des méthodes capables de
+représenter des relations non linéaires et des interactions.
+
+\section{Gouvernance, validation et traçabilité des calculs}
+
+\subsection{Exigences de transparence et de revue}
+
+Le règlement délégué prévoit que le \textit{Best Estimate} soit calculé de
+manière transparente et que la méthode ainsi que les résultats puissent être
+revus par un expert qualifié. Cette exigence
+implique que les organismes soient en mesure de documenter les données
+utilisées, les hypothèses retenues, les choix méthodologiques, les limites du
+modèle et les contrôles réalisés.
+
+La transparence ne suppose pas que le modèle soit simple, mais que son
+fonctionnement soit suffisamment compris pour permettre une analyse critique.
+Un modèle stochastique peut comporter un grand nombre de règles et
+d'interactions ; il doit néanmoins être possible d'identifier les principales
+sources de variation des résultats et d'expliquer les écarts significatifs.
+
+\subsection{Rôle de la fonction actuarielle}
+
+La fonction actuarielle coordonne le calcul des provisions techniques et
+évalue l'adéquation des méthodes et hypothèses utilisées. Elle doit notamment
+apprécier l'incertitude associée aux estimations, s'assurer de l'évaluation
+appropriée des options et garanties, comparer et justifier les différences
+significatives entre les calculs et réaliser des analyses de sensibilité sur
+les principaux risques sous-jacents.
+
+Ces missions donnent une portée réglementaire directe à la compréhension des
+écarts. Il ne suffit pas de constater qu'un calcul stochastique produit un
+montant différent du calcul déterministe : il convient d'identifier les
+hypothèses et mécanismes responsables de cette différence, d'en apprécier la
+matérialité et de vérifier la cohérence économique du résultat.
+
+\subsection{Apport d'un modèle explicatif complémentaire}
+
+Un modèle de \textit{machine learning} ne remplace ni le modèle ALM ni les
+contrôles actuariels exigés par Solvabilité~II. Il constitue un modèle
+complémentaire, construit à partir des sorties du modèle principal. Son intérêt
+réside dans sa capacité à synthétiser un grand nombre de résultats et à mettre
+en évidence les relations entre les caractéristiques d'une configuration et
+l'écart de valorisation observé.
+
+Son utilisation doit toutefois respecter des principes similaires de
+gouvernance : séparation des données d'apprentissage et de test, contrôle du
+surapprentissage, stabilité des résultats, suivi des erreurs, documentation des
+variables et analyse de l'importance des facteurs. Les performances
+prédictives ne suffisent pas à elles seules. Dans un contexte prudentiel, le
+modèle doit également produire des résultats cohérents avec l'analyse
+actuarielle et permettre une interprétation des principaux effets.
+
+La démarche retenue dans ce mémoire répond ainsi à un double objectif. Elle
+cherche, d'une part, à prédire l'écart normalisé entre les deux valorisations et,
+d'autre part, à fournir une grille de lecture des facteurs qui déterminent cet
+écart. Cette seconde dimension est essentielle pour que l'outil contribue à la
+traçabilité et à la gouvernance plutôt qu'à la seule automatisation du calcul.
+
+\section{Évolutions issues de la revue de Solvabilité II}
+
+\subsection{Un cadre révisé applicable à compter du 30 janvier 2027}
+
+La directive (UE) 2025/2 a modifié la directive Solvabilité~II, notamment en
+matière de proportionnalité, de reporting, de mesures relatives aux garanties
+de long terme, de risques de durabilité et de surveillance. Les dispositions révisées et les modifications du
+règlement délégué s'appliqueront à compter du 30 janvier 2027. Jusqu'à cette date, les exigences actuellement en
+vigueur restent applicables.
+
+Cette distinction temporelle est importante pour le présent mémoire. Les
+développements précédents décrivent le cadre applicable à la date de rédaction.
+Les règles exposées ci-après constituent une évolution future du régime et ne
+doivent pas être présentées comme une possibilité générale déjà ouverte à
+l'ensemble des organismes.
+
+\subsection{Introduction d'une évaluation déterministe prudente encadrée}
+
+La revue introduit, pour certaines entreprises de petite taille et non
+complexes, la possibilité d'utiliser une évaluation déterministe prudente du
+\textit{Best Estimate} pour des engagements d'assurance vie comportant des
+options et garanties considérées comme non significatives. Le règlement
+délégué (UE) 2026/269 encadre strictement cette possibilité.
+
+Son utilisation suppose notamment que les engagements concernés soient
+clairement identifiés, que l'entreprise relève de la catégorie des entreprises
+de petite taille et non complexes et que la valeur temps des options et
+garanties des engagements visés demeure inférieure à \(5\,\%\) du SCR. La
+valorisation déterministe prudente correspond alors à la somme :
+
+\begin{enumerate}
+    \item d'une meilleure estimation déterministe des engagements concernés ;
+    \item d'une majoration stochastique appliquée au SCR de l'entreprise.
+\end{enumerate}
+
+La majoration stochastique est fixée par défaut à \(5\,\%\), sauf si
+l'entreprise démontre à l'autorité de contrôle qu'un autre pourcentage
+représente plus correctement son profil de risque.
+
+Cette nouvelle mesure ne signifie pas que l'approche stochastique perd son rôle
+de reference pour la valorisation des options et garanties matérielles. Elle
+constitue une mesure de proportionnalité ciblée, réservée à un périmètre
+restreint et accompagnée d'un ajustement prudent. Elle confirme néanmoins
+l'importance opérationnelle de la relation entre valorisations déterministe et
+stochastique. La capacité à mesurer la valeur temps, à identifier les facteurs
+qui la rendent significative et à justifier le niveau d'un ajustement devient
+d'autant plus pertinente.
+
+La démarche du présent mémoire ne se confond pas avec cette méthode
+réglementaire simplifiée. Elle ne vise pas à calculer la majoration prévue par
+le règlement délégué, ni à démontrer l'éligibilité d'une entreprise à ce
+dispositif. Elle cherche à modéliser, sur le périmètre étudié, l'écart réellement
+observé entre les sorties déterministes et stochastiques de SALLTO. Les
+évolutions réglementaires renforcent toutefois l'intérêt du sujet en mettant
+explicitement en avant la question de la matérialité de la valeur temps et de
+la justification d'une approximation déterministe.
 
 
-\section{Définition et calcul du ratio de solvabilité S2}
-\label{sec:s2}
+Ainsi, Solvabilité~II impose une valorisation prospective, cohérente avec le marché et
+fondée sur une moyenne probabilisée des flux futurs. Pour des contrats
+d'assurance vie comportant des options, des garanties, une participation aux
+bénéfices ou des comportements dynamiques, l'approche stochastique permet de
+représenter des effets que la seule projection d'un scénario central ne capture
+pas nécessairement. L'écart entre les deux méthodes traduit alors l'effet de
+l'incertitude, des non-linéarités et des interactions entre l'actif, le passif
+et la politique de gestion.
 
-
-\subsection{Une mesure synthétique de la solidité financière d'un assureur}
-
-Définition du ratio S2 : Fonds propres éligibles / SCR
-
-Interprétation économique du ratio (seuil réglementaire de 100 %, zone de confort, zone d’alerte)
-
-Rôle central du ratio dans la communication avec les régulateurs et les investisseurs
-
-\subsection{Le Solvency Capital Requirement (SCR) : estimation des riques extrêmes}
-
-Logique de calcul : capital requis pour absorber un choc extrême avec un niveau de confiance de 99,5 % sur un an
-
-Méthodes de calcul : formule standard vs modèle interne partiel ou complet
-
-Décomposition du SCR : risque de marché, risque de souscription, risque de crédit, risque opérationnel
-
-\subsection{Les fonds propres éligibles : capacité à couvrir les pertes}
-
-Classification des fonds propres : Tier 1, Tier 2, Tier 3
-
-Critères d’éligibilité et ajustements réglementaires
-
-Impact des réévaluations d’actifs, des plus-values latentes et des instruments hybrides
-
-\subsection{Un indicateur sensible aux chocs économiques et aux arbitrages de gestion}
-
-Sensibilité du ratio aux taux d’intérêt, à la volatilité, aux spreads de crédit
-
-Mécanismes de gestion du ratio : couverture du SCR, allocation d’actifs, revalorisation du passif
-
-Enjeux stratégiques : pilotage dynamique de la solvabilité, gestion de la marge de manœuvre
-
-\section{Enjeux de pilotage de la solvabilité}
-\label{sec:gse}
-
-
-\subsection{Rôle de l'anticipation du ratio dans la gestion stratégique}
-
-
-\subsubsection{Limites opérationnelles des modèles actuels}
+Les exigences de transparence, de revue et de gouvernance conduisent les
+organismes à ne pas seulement produire un montant, mais également à en
+comprendre les déterminants. C'est dans cette perspective que s'inscrit le
+recours au \textit{machine learning} dans ce mémoire. Le chapitre suivant
+présente le modèle ALM SALLTO ainsi que la méthodologie utilisée pour construire
+la base de données destinée à l'analyse de l'écart entre
+\(BE_{\mathrm{det}}\) et \(BE_{\mathrm{sto}}\).

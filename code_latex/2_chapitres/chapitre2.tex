@@ -1,98 +1,366 @@
 \chapter{Modèle ALM interne et construction de la base de données}
 
+Ce chapitre présente le modèle ALM utilisé dans le cadre de ce mémoire ainsi que la méthodologie mise en place pour construire la base de données. Dans un premier temps, le fonctionnement général du modèle SALLTO est décrit. Dans un second temps, le portefeuille étudié et les différentes sensibilités réalisées sont présentés. Enfin, la méthode de construction de la base de données et l'automatisation des lancements sont détaillées.
+
+
+% =============================================================================
+% MODÈLE ALM
+% =============================================================================
+
 \section{Le modèle ALM interne}
 
-Au sein de Forsides, le modèle d'ALM s'appelle SALLTO (Solvency Asset Liability Life TOols). Il s'agit d'un outil développé et codé en interne en C\#. Ce modèle permet de représenter l'évolution temporelle d'une compagnie d'assurance vie en intégrant explicitement les interactions entre l'actif et le passif, à partir de scénarios économiques.
+Au sein de Forsides, le modèle ALM utilisé s'appelle SALLTO (\textit{Solvency Asset Liability Life TOols}). Il s'agit d'un outil développé et codé en interne en C\#. Ce modèle permet de représenter l'évolution dans le temps d'une compagnie d'assurance vie, en intégrant explicitement les interactions entre l'actif et le passif à partir de scénarios économiques.
 
-Pour fonctionner, le modèle nécessite un fichier d'input dans lequel sont renseignées différentes hypothèses. Ces hypothèses concernent à la fois l'actif et le passif, ainsi que la politique de gestion de la compagnie d'assurance étudiée. Le fichier d'entrée inclut également les scénarios économiques, générés indépendamment par le générateur de scénarios économiques (GSE), qui servent de base aux projections réalisées par le modèle.
+L'objectif d'un modèle ALM est de projeter conjointement les actifs détenus par l'assureur et les engagements envers les assurés. Cette projection permet notamment de prendre en compte les interactions entre les conditions économiques, les caractéristiques du portefeuille, les comportements des assurés et la politique de gestion de la compagnie.
 
+Pour fonctionner, SALLTO nécessite un fichier d'entrée dans lequel sont renseignées différentes hypothèses. Ces hypothèses concernent :
 
+\begin{itemize}
+    \item les caractéristiques de l'actif ;
+    \item les caractéristiques du passif ;
+    \item les hypothèses de comportement des assurés ;
+    \item les tables de mortalité ;
+    \item la politique de gestion de la compagnie ;
+    \item les scénarios économiques utilisés pour les projections.
+\end{itemize}
+
+Les scénarios économiques sont générés indépendamment par un générateur de scénarios économiques, appelé GSE. Ils sont ensuite intégrés dans le fichier d'entrée de SALLTO et servent de base aux différentes projections réalisées par le modèle.
+
+La Figure~\ref{fig:schema_sallto} présente de manière synthétique le fonctionnement général de SALLTO et les différentes données nécessaires à son utilisation.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{images/2_chapitres/chapitre2/Schema_SALLTO.png}
-    \caption{Schéma de fonctionnement de SALLTO}
+    \includegraphics[width=0.9\textwidth]
+    {images/2_chapitres/chapitre2/Schema_SALLTO.png}
+    \caption{Schéma général de fonctionnement de SALLTO}
+    \label{fig:schema_sallto}
 \end{figure}
 
-\subsection{Générateur de scénarios économiques}
 
-Théorie mathématique derrière
+\subsection{Le générateur de scénarios économiques}
+
+Le générateur de scénarios économiques permet de produire un ensemble de trajectoires possibles pour les principales variables économiques et financières utilisées dans le modèle. Ces trajectoires concernent notamment les taux d'intérêt, les actions et l'immobilier.
+
+Le GSE est calibré à partir de données issues des marchés financiers. Il génère ensuite plusieurs scénarios représentant différentes évolutions possibles de l'environnement économique sur l'horizon de projection.
+
+Ces scénarios sont utilisés dans les calculs stochastiques de SALLTO. Pour chaque scénario économique, le modèle projette l'évolution de l'actif, du passif et des décisions de gestion. La moyenne des résultats obtenus sur l'ensemble des scénarios permet ensuite de déterminer le Best Estimate stochastique.
+
+Dans le cadre de cette étude, plusieurs paramétrages du GSE sont utilisés afin de faire varier la courbe des taux, la volatilité des taux et la volatilité des actions.
+
 
 \subsection{Fonctionnement de SALLTO}
 
-Etapes de fonctionnement
+À partir du fichier d'entrée, des scénarios économiques et des tables de mortalité, SALLTO projette l'évolution du portefeuille sur l'ensemble de l'horizon retenu.
 
-\section{Description du portfeuille étudié}
-\subsection{}
+Pour chaque pas de temps et pour chaque scénario économique, le modèle simule notamment :
 
+\begin{itemize}
+    \item l'évolution de la valeur des actifs ;
+    \item les produits financiers générés par le portefeuille ;
+    \item les prestations versées aux assurés ;
+    \item les rachats ;
+    \item la participation aux bénéfices ;
+    \item les décisions de gestion prises par l'assureur ;
+    \item l'évolution des provisions mathématiques.
+\end{itemize}
 
-\section{Méthodologie de la construction de la base de données}
+Les interactions entre l'actif et le passif sont prises en compte au cours de chaque projection. Par exemple, le rendement des actifs influence la capacité de l'assureur à revaloriser les contrats. En retour, le niveau de revalorisation peut modifier le comportement de rachat des assurés et donc les flux futurs du passif.
 
-\subsection{Définition de la variable cible et des variables explicatives retenues}
+À l'issue des projections, SALLTO produit un fichier de résultats contenant notamment les flux de trésorerie, les résultats nécessaires aux calculs Solvabilité~II ainsi que les différents éléments de valorisation du portefeuille.
 
-L'objectif principal de ce mémoire est de comprendre et d'expliquer les mécanismes conduisant aux différences de valorisation entre un BE déterministe et un BE stochastique. L'enjeu n'est pas de comparer ces deux approches d'un point de vue normatif, mais d'analyser les facteurs qui contribuent aux écarts observés, afin d'en améliorer la traçabilité, la justification et la compréhension dans un cadre réglementaire. Afin d'aborder la problématique, une base de données a été construite. Elle est composée de 9 variables explicatives : courbe de taux, spread, volatilité des taux, volatilité des actions, garanti de taux, taux de plus value actions, rachats conjoncturels, duration et TMG.
+Dans le cadre de ce mémoire, les principaux résultats utilisés sont :
 
-La base de données adopte une approche centrée sur l'analyse des écarts, en définissant comme variable cible la différence entre le Best Estimate stochastique et le Best Estimate déterministe divisée par la somme des PM. Cette formulation vise à isoler et à analyser plus directement les facteurs expliquant les divergences entre les deux valorisations en pourcentage pour que ce soit généralisable, en mettant en évidence les effets liés à la prise en compte de l'incertitude, des non-linéarités et des options financières.
-
-Cette approche s'inscrit dans une démarche de transparence et de gouvernance des modèles, en cohérence avec les exigences de Solvabilité II.
-
-Les variables explicatives retenues sont majoritairement liées aux caractéristiques du passif, conformément à l'objectif du mémoire, qui vise à analyser les écarts de valorisation du point de vue des engagements d'assurance. Pour les sélectionner, nous avons réalisé deux études de sensiibilités sur plusieurs variables afin de garder que les variables les plus impactantes sur la TVOG. La première étude de sensibilité a été réalisée avec la courbe des taux au 31/12/2025 et la seconde a été réalisée avec la courbe des taux au 31/12/2021. Nous avons choisi la courbe des taux au 31/12/2021 car c'est une courbe des taux basse ce qui nous permettra de mettre en lumiere l'impact de certaines variables qui peut être amplifié par un environnement de taux bas.
-
-Les variables sur lesquelles nous avons fait les sensibilités sont les suivantes : la volatilité des taux, la volatilité des actions, les rachat conjoncturels, les rachats structurels, l'age des assurés, le taux minimal garanti, l'inflation, la participation aux bénéfices, la garantie de taux, les chargements, les plus values sur les actions, le spread et la courbe des taux.
-
-La variable duration est une variable que nous avons construit avec la variable age des assurés et rachats structurels combinés. 
-
-A la suite de ces deux études de sensibilités, nous avons choisi de ne garder que les variables les plus impactantes sur la TVOG. Les variables retenues sont : la courbe des taux, le spread, la volatilité des taux, la volatilité des actions, le garanti de taux, le taux de plus value actions, les rachats conjoncturels, la duration et le TMG.
-
-\subsection{Construction de la base de données}
-
-Le jeu de données utilisé dans ce mémoire est construit à partir d'une démarche de sensibilités appliquée à SALLTO. Cette approche consiste à faire varier de manière contrôlée certaines hypothèses du modèle, principalement liées au passif, afin d'observer l'impact de ces variations sur la valorisation des engagements d'assurance.
-
-L'objectif de cette démarche est de générer un ensemble d'observations structurées permettant d'analyser, dans un cadre maîtrisé, les relations entre les variables explicatives issues des sensibilités et les résultats de Best Estimate. Chaque observation du jeu de données correspond à une configuration donnée des hypothèses du modèle, définie par un ensemble de valeurs prises par les variables soumises à sensibilité.
-
-Les sensibilités sont réalisées à une date de valorisation donnée, sur un périmètre de passif constant. En dehors des variables explicitement soumises à sensibilité, l'ensemble des hypothèses est maintenu identique sur l'ensemble des calculs. Cette hypothèse garantit que les variations observées sur les résultats de valorisation proviennent exclusivement des paramètres étudiés.
-
-Pour chaque configuration testée, le SALLTO permet de calculer:
-
-un Best Estimate déterministe;
-
-un Best Estimate stochastique.
-
-Le Best Estimate déterministe constitue à la fois un résultat de valorisation à part entière et une information explicative essentielle pour l'analyse des résultats stochastiques.
-
-Le jeu de données repose sur un ensemble de variables explicatives comprenant à la fois des variables issues des sensibilités et le Best Estimate déterministe.
+\begin{itemize}
+    \item le Best Estimate déterministe ;
+    \item le Best Estimate stochastique ;
+    \item l'écart entre ces deux valorisations.
+\end{itemize}
 
 
-Les sensibilités réalisées portent principalement sur des variables du passif, complétées par une variable relative à l'actif. Les variables explicatives soumises à sensibilité sont les suivantes:
+% =============================================================================
+% PORTEFEUILLE
+% =============================================================================
 
-taux servi;
+\section{Description du portefeuille étudié}
 
-rachats conjoncturels;
+% À compléter avec les informations disponibles sur le portefeuille :
+% - nature des contrats ;
+% - montant total de provisions mathématiques ;
+% - âge moyen des assurés ;
+% - ancienneté moyenne ;
+% - taux minimum garanti ;
+% - allocation d'actifs ;
+% - politique de participation aux bénéfices ;
+% - hypothèses de rachats.
 
-rachats structurels;
+L'étude est réalisée sur un portefeuille d'assurance vie modélisé dans SALLTO. Le même périmètre de passif est conservé pour l'ensemble des simulations. Les différentes observations de la base de données ne correspondent donc pas à des portefeuilles totalement indépendants, mais à différentes configurations d'un même portefeuille de référence.
 
-âge des assurés;
+La configuration centrale correspond aux hypothèses retenues comme hypothèses de référence. Les autres configurations sont obtenues en faisant varier de manière contrôlée certaines caractéristiques économiques ou contractuelles autour de cette situation centrale.
 
-taux minimal garanti;
-
-ancienneté des contrats;
-
-courbe de taux utilisée pour la valorisation de l'actif.
-
-
-En complément des variables soumises à sensibilité, le Best Estimate déterministe est intégré au jeu de données en tant que variable explicative. Il constitue une synthèse des caractéristiques du portefeuille et des hypothèses retenues dans le cadre déterministe, et permet de capturer une part importante de l'information expliquant le niveau du Best Estimate stochastique.
-
-L'inclusion du BE déterministe parmi les variables explicatives vise à analyser dans quelle mesure celui-ci permet d'expliquer le BE stochastique, ainsi que les limites de cette explication lorsque des effets non linéaires ou liés à l'incertitude sont présents.
-
-Pour chacune des variables soumises à sensibilité, cinq sensibilités sont définies:
-
-une configuration centrale, correspondant aux hypothèses de référence;
-
-deux sensibilités à la hausse;
-
-deux sensibilités à la baisse.
-
-Ces variations sont choisies de manière symétrique autour du scénario central et permettent de couvrir une plage de valeurs suffisamment large pour faire apparaître des effets non linéaires, tout en restant cohérentes.
+Cette méthode permet d'étudier l'impact propre de chaque variable, tout en conservant une structure de portefeuille comparable entre les différentes simulations.
 
 
-\subsection{Justification des variables retenues}
+% =============================================================================
+% CONSTRUCTION DE LA BASE
+% =============================================================================
+
+\section{Méthodologie de construction de la base de données}
+
+\subsection{Objectif de la base de données}
+
+L'objectif principal de ce mémoire est de comprendre et d'expliquer les mécanismes conduisant aux différences de valorisation entre un Best Estimate déterministe et un Best Estimate stochastique.
+
+L'enjeu n'est pas de comparer ces deux approches d'un point de vue normatif, mais d'analyser les facteurs qui contribuent aux écarts observés afin d'en améliorer la traçabilité, la justification et la compréhension dans un cadre réglementaire.
+
+Pour répondre à cette problématique, une base de données a été construite à partir des résultats produits par SALLTO. Chaque ligne de la base correspond à une configuration particulière du portefeuille, définie par une combinaison de valeurs prises par les différentes variables soumises à sensibilité.
+
+La base de données est composée de neuf variables explicatives :
+
+\begin{itemize}
+    \item la courbe des taux ;
+    \item le spread ;
+    \item la volatilité des taux ;
+    \item la volatilité des actions ;
+    \item la garantie de taux ;
+    \item le taux de plus-values latentes sur les actions ;
+    \item les rachats conjoncturels ;
+    \item la duration du passif ;
+    \item le taux minimum garanti, noté TMG.
+\end{itemize}
+
+
+\subsection{Définition de la variable cible}
+
+La base de données adopte une approche centrée sur l'analyse de l'écart entre les deux méthodes de valorisation. La variable cible est définie comme la différence entre le Best Estimate stochastique et le Best Estimate déterministe, rapportée à la somme des provisions mathématiques du portefeuille :
+
+\begin{equation}
+    Y =
+    \frac{BE_{\mathrm{sto}}-BE_{\mathrm{det}}}
+    {\displaystyle\sum_{i} PM_i},
+    \label{eq:variable_cible}
+\end{equation}
+
+avec :
+
+\begin{itemize}
+    \item \(BE_{\mathrm{sto}}\), le Best Estimate stochastique ;
+    \item \(BE_{\mathrm{det}}\), le Best Estimate déterministe ;
+    \item \(PM_i\), les provisions mathématiques associées aux différents contrats ou groupes de contrats du portefeuille.
+\end{itemize}
+
+Le fait de rapporter l'écart à la somme des provisions mathématiques permet d'obtenir une mesure exprimée en pourcentage de la taille du portefeuille. Cette normalisation facilite la comparaison entre les différentes configurations et rend les résultats plus facilement généralisables.
+
+Cette formulation permet également d'isoler plus directement les facteurs expliquant les divergences entre les deux valorisations. Elle met notamment en évidence les effets liés à l'incertitude économique, aux relations non linéaires et aux options et garanties financières.
+
+Cette approche s'inscrit dans une démarche de transparence et de gouvernance des modèles, en cohérence avec les exigences de Solvabilité~II.
+
+
+\subsection{Principe de construction des observations}
+
+Le jeu de données utilisé dans ce mémoire est construit à partir d'une démarche de sensibilités appliquée à SALLTO. Cette approche consiste à faire varier de manière contrôlée certaines hypothèses du modèle afin d'observer l'impact de ces variations sur la valorisation des engagements d'assurance.
+
+L'objectif est de générer un ensemble d'observations structurées permettant d'analyser, dans un cadre maîtrisé, les relations entre les variables explicatives issues des sensibilités et l'écart entre le Best Estimate stochastique et le Best Estimate déterministe.
+
+Chaque observation de la base correspond donc à une configuration donnée des hypothèses du modèle. Cette configuration est définie par une combinaison de valeurs prises par les neuf variables explicatives.
+
+Les sensibilités sont réalisées à une date de valorisation donnée et sur un périmètre de passif constant. En dehors des variables explicitement soumises à sensibilité, l'ensemble des autres hypothèses est maintenu identique au cours des calculs.
+
+Cette démarche permet de limiter les effets extérieurs aux paramètres étudiés. Les variations observées dans les résultats peuvent ainsi être principalement rattachées aux variables soumises à sensibilité.
+
+Pour chaque configuration testée, SALLTO permet de calculer :
+
+\begin{itemize}
+    \item un Best Estimate déterministe ;
+    \item un Best Estimate stochastique ;
+    \item la variable cible définie par l'équation~\eqref{eq:variable_cible}.
+\end{itemize}
+
+
+% =============================================================================
+% ÉTUDES DE SENSIBILITÉ
+% =============================================================================
+
+\subsection{Études préliminaires de sensibilité}
+
+Avant de construire la base de données définitive, deux études préliminaires de sensibilité ont été réalisées sur un ensemble plus large de variables.
+
+L'objectif de ces études était d'identifier les variables ayant le plus d'impact sur la TVOG et de ne retenir dans la base finale que les facteurs les plus pertinents.
+
+Les variables initialement testées étaient les suivantes :
+
+\begin{itemize}
+    \item la volatilité des taux ;
+    \item la volatilité des actions ;
+    \item les rachats conjoncturels ;
+    \item les rachats structurels ;
+    \item l'âge des assurés ;
+    \item le taux minimum garanti ;
+    \item l'inflation ;
+    \item la participation aux bénéfices ;
+    \item la garantie de taux ;
+    \item les chargements ;
+    \item le taux de plus-values latentes sur les actions ;
+    \item le spread ;
+    \item la courbe des taux.
+\end{itemize}
+
+La première étude de sensibilité a été réalisée avec la courbe des taux au 31 décembre 2025. Une seconde étude a ensuite été réalisée avec la courbe des taux au 31 décembre 2021.
+
+La courbe du 31 décembre 2021 a été retenue car elle correspond à un environnement de taux particulièrement bas. Cet environnement permet de mieux mettre en évidence l'impact de certaines variables, notamment celles liées aux garanties financières, dont les effets peuvent être amplifiés lorsque les taux d'intérêt sont faibles.
+
+Afin de couvrir plusieurs environnements économiques, cinq courbes de taux sont finalement utilisées :
+
+\begin{itemize}
+    \item la courbe au 31 décembre 2024 ;
+    \item la courbe au 31 décembre 2023 ;
+    \item la courbe au 31 décembre 2025 ;
+    \item la courbe au 31 décembre 2025 augmentée de \(2{,}5\,\%\) ;
+    \item la courbe au 31 décembre 2021.
+\end{itemize}
+
+La Figure~\ref{fig:courbes_taux} présente les différentes courbes retenues.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]
+    {images/2_chapitres/chapitre2/courbe_des_taux_utilisés.png}
+    \caption{Courbes de taux retenues pour la construction de la base de données}
+    \label{fig:courbes_taux}
+\end{figure}
+
+Les résultats des études préliminaires sont présentés dans les
+Figures~\ref{fig:sensi_1}, \ref{fig:sensi_2} et \ref{fig:sensi_3}. Ces tableaux permettent de comparer l'impact des différentes sensibilités sur les résultats du modèle.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]
+    {images/2_chapitres/chapitre2/tableau_sensi_2025_1.png}
+    \caption{Résultats de l'étude préliminaire de sensibilité -- première partie}
+    \label{fig:sensi_1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]
+    {images/2_chapitres/chapitre2/tableau_sensi_2025_2.png}
+    \caption{Résultats de l'étude préliminaire de sensibilité -- deuxième partie}
+    \label{fig:sensi_2}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]
+    {images/2_chapitres/chapitre2/tableau_sensi_2025_3.png}
+    \caption{Résultats de l'étude préliminaire de sensibilité -- troisième partie}
+    \label{fig:sensi_3}
+\end{figure}
+
+
+\subsection{Construction de la variable de duration}
+
+À la suite des études préliminaires, l'âge des assurés et les rachats structurels n'ont pas été intégrés séparément dans la base de données définitive.
+
+Ces deux variables ont été regroupées à travers une variable de duration du passif. En effet, l'âge des assurés et leur comportement de rachat influencent tous les deux la durée pendant laquelle les contrats restent dans le portefeuille.
+
+La variable de duration permet donc de résumer une partie de l'information portée par ces deux facteurs. Une duration faible correspond à un écoulement plus rapide du passif, tandis qu'une duration élevée correspond à des engagements conservés plus longtemps dans le portefeuille.
+
+
+\subsection{Sélection des variables définitives}
+
+À la suite des deux études préliminaires, seules les variables ayant l'impact le plus important sur la TVOG ont été conservées.
+
+Les neuf variables retenues sont :
+
+\begin{enumerate}
+    \item la courbe des taux ;
+    \item le spread ;
+    \item la volatilité des taux ;
+    \item la volatilité des actions ;
+    \item la garantie de taux ;
+    \item le taux de plus-values latentes sur les actions ;
+    \item les rachats conjoncturels ;
+    \item la duration du passif ;
+    \item le TMG.
+\end{enumerate}
+
+Ces variables permettent de représenter à la fois l'environnement économique, les caractéristiques des contrats, la structure du passif et le comportement des assurés.
+
+
+\subsection{Amplitude des sensibilités retenues}
+
+Pour chacune des variables sélectionnées, plusieurs modalités sont définies autour d'une configuration centrale. Les amplitudes retenues sont présentées dans la Figure~\ref{fig:recap_variables}.
+
+Les cellules grisées correspondent à la configuration centrale du portefeuille. Cette configuration constitue le point de référence de l'étude. Les autres modalités correspondent à des sensibilités à la hausse ou à la baisse par rapport à cette situation centrale.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]
+    {images/2_chapitres/chapitre2/recap_variables.png}
+    \caption{Synthèse des variables et des modalités retenues dans la base de données}
+    \label{fig:recap_variables}
+\end{figure}
+
+
+\subsection{Taille de la base de données}
+
+La base de données est obtenue en croisant l'ensemble des modalités retenues pour les neuf variables explicatives.
+
+Le nombre total de configurations est donc égal à :
+
+\begin{equation}
+    3 \times 3 \times 3 \times 5 \times 4
+    \times 4 \times 2 \times 3 \times 4
+    = 51\,840.
+\end{equation}
+
+La base de données finale contient ainsi \(51\,840\) lignes. Chaque ligne correspond à une configuration particulière du portefeuille et contient :
+
+\begin{itemize}
+    \item les valeurs prises par les neuf variables explicatives ;
+    \item le Best Estimate déterministe ;
+    \item le Best Estimate stochastique ;
+    \item l'écart normalisé entre les deux valorisations.
+\end{itemize}
+
+La construction de cette base a donc nécessité le lancement de \(51\,840\) projections dans SALLTO.
+
+Le GSE dépend de trois niveaux de volatilité des taux, de trois niveaux de volatilité des actions et de cinq courbes de taux. Il a donc été nécessaire de générer :
+
+\begin{equation}
+    3 \times 3 \times 5 = 45
+\end{equation}
+
+jeux de scénarios économiques distincts.
+
+Pour chacun de ces jeux de scénarios, les autres variables ont ensuite été combinées directement dans SALLTO afin d'obtenir l'ensemble des \(51\,840\) configurations.
+
+
+% =============================================================================
+% AUTOMATISATION
+% =============================================================================
+
+\subsection{Lancement automatisé de SALLTO}
+
+Le lancement manuel de \(51\,840\) projections n'était pas envisageable compte tenu du volume de calculs nécessaire. Une procédure d'automatisation a donc été mise en place afin de lancer successivement les différentes configurations dans SALLTO.
+
+Cette automatisation poursuit plusieurs objectifs :
+
+\begin{itemize}
+    \item modifier les hypothèses du fichier d'entrée ;
+    \item sélectionner le jeu de scénarios économiques correspondant ;
+    \item lancer automatiquement SALLTO ;
+    \item attendre la fin de chaque projection ;
+    \item récupérer et enregistrer les fichiers de sortie ;
+    \item associer chaque résultat à la configuration correspondante ;
+    \item regrouper les résultats dans une base de données unique.
+\end{itemize}
+
+% À compléter avec la description précise de ton programme :
+% - langage utilisé ;
+% - utilisation éventuelle de pywinauto ;
+% - organisation des boucles ;
+% - nommage des outputs ;
+% - contrôle de la fin du calcul ;
+% - extraction du BE déterministe et du BE stochastique ;
+% - temps total de lancement ;
+% - gestion des erreurs.
