@@ -1,16 +1,534 @@
-\chapter{Apports du machine learning pour la rationalisation des écrats}
+\chapter{Apports du machine learning pour la rationalisation des écarts}
 
-TEST 
+Le chapitre précédent a permis de construire une base de données à partir de projections déterministes et stochastiques réalisées avec SALLTO. Chaque observation correspond à une configuration particulière du portefeuille, obtenue en faisant varier de manière contrôlée différentes hypothèses économiques, financières et contractuelles.
 
-\section{Problématique de régression dans le cadre du BE}
+L'objectif est désormais d'exploiter cette base afin d'étudier la relation entre les caractéristiques du portefeuille et l'écart observé entre les deux méthodes de valorisation du \textit{Best Estimate}. Cette problématique peut être formulée comme un problème d'apprentissage supervisé : à partir d'un ensemble de variables explicatives connues, il s'agit de construire une fonction capable d'estimer une variable cible observée lors des simulations.
+
+Le recours au machine learning poursuit ici un double objectif. Le premier est prédictif : il s'agit d'évaluer dans quelle mesure l'écart entre le \textit{Best Estimate} déterministe et le \textit{Best Estimate} stochastique peut être reproduit à partir d'un nombre limité de caractéristiques du portefeuille. Le second, qui constitue un enjeu central de ce mémoire, est explicatif : les modèles doivent permettre d'identifier les variables qui contribuent le plus aux écarts observés et de mieux comprendre les mécanismes à l'origine de ces différences de valorisation.
+
+Dans cette perspective, plusieurs familles de modèles sont étudiées. Un modèle linéaire généralisé est tout d'abord utilisé comme modèle de référence. Deux méthodes fondées sur les arbres de décision, le \textit{Random Forest} et le \textit{XGBoost}, sont ensuite introduites afin de représenter des relations potentiellement non linéaires et des interactions plus complexes entre les variables.
+
+
+\section{Problématique de régression dans le cadre du Best Estimate}
+
 \subsection{Formulation du problème}
+
+La problématique étudiée dans ce mémoire s'inscrit dans le cadre d'une régression supervisée. Pour chaque configuration $i$ du portefeuille, un ensemble de variables explicatives $\mathbf{x}_i$ est connu et associé à une valeur cible $y_i$ obtenue à partir des projections réalisées dans SALLTO.
+
+La variable cible retenue est l'écart entre le \textit{Best Estimate} stochastique et le \textit{Best Estimate} déterministe, rapporté au montant total des provisions mathématiques du portefeuille :
+
+\begin{equation}
+    Y_i =
+    \frac{
+        BE_{\mathrm{sto},i} - BE_{\mathrm{det},i}
+    }{
+        \sum_j PM_{i,j}
+    }.
+    \label{eq:target_ml}
+\end{equation}
+
+Cette normalisation permet de raisonner en écart relatif plutôt qu'en montant absolu. Un écart de plusieurs millions d'euros ne possède en effet pas la même importance selon qu'il concerne un portefeuille de quelques dizaines de millions d'euros ou plusieurs milliards d'euros. La variable $Y_i$ mesure ainsi l'écart entre les deux valorisations en proportion de la taille du portefeuille.
+
+Pour chaque observation, le vecteur des variables explicatives peut être écrit sous la forme :
+
+\begin{equation}
+\mathbf{x}_i =
+\left(
+x_{i,1},
+x_{i,2},
+\ldots,
+x_{i,9}
+\right),
+\end{equation}
+
+où les neuf composantes correspondent respectivement à la courbe des taux, au spread, à la volatilité des taux, à la volatilité des actions, à la garantie de taux, au taux de plus-values latentes sur les actions, aux rachats conjoncturels, à la duration du passif et au taux minimum garanti.
+
+Le problème revient alors à rechercher une fonction $f$ reliant ces caractéristiques à la variable cible :
+
+\begin{equation}
+    Y_i = f(\mathbf{x}_i) + \varepsilon_i,
+\end{equation}
+
+où $\varepsilon_i$ représente la composante de l'écart qui n'est pas expliquée par le modèle retenu.
+
+À partir d'un échantillon d'apprentissage composé de $n$ observations,
+
+\begin{equation}
+    \mathcal{D}
+    =
+    \left\{
+    \left(\mathbf{x}_i,y_i\right)
+    \right\}_{i=1}^{n},
+\end{equation}
+
+l'objectif est d'estimer une fonction $\widehat{f}$ telle que :
+
+\begin{equation}
+    \widehat{Y}_i
+    =
+    \widehat{f}(\mathbf{x}_i)
+\end{equation}
+
+soit aussi proche que possible de la valeur $Y_i$ issue des calculs réalisés avec SALLTO.
+
+De manière générale, l'apprentissage d'un modèle de régression consiste à rechercher une fonction appartenant à une famille de fonctions $\mathcal{F}$ minimisant une fonction de perte :
+
+\begin{equation}
+    \widehat{f}
+    =
+    \underset{f \in \mathcal{F}}{\operatorname{arg\,min}}
+    \frac{1}{n}
+    \sum_{i=1}^{n}
+    L
+    \left(
+    y_i,
+    f(\mathbf{x}_i)
+    \right),
+    \label{eq:empirical_risk}
+\end{equation}
+
+où $L$ mesure l'écart entre la valeur réellement obtenue avec SALLTO et celle estimée par le modèle.
+
+La nature de la famille $\mathcal{F}$ constitue précisément l'une des différences majeures entre les modèles étudiés dans ce chapitre. Dans un modèle linéaire, les relations possibles entre les variables explicatives et la cible sont fortement contraintes. À l'inverse, les méthodes fondées sur les arbres de décision permettent de construire des fonctions beaucoup plus flexibles.
+
+Il convient également de préciser que le \textit{Best Estimate} déterministe n'est pas utilisé comme variable explicative du modèle. Le modèle cherche directement à expliquer l'écart relatif entre les deux approches à partir des caractéristiques économiques et contractuelles du portefeuille. Ce choix est cohérent avec l'objectif principal de l'étude, qui ne consiste pas uniquement à reproduire une valeur de $BE_{\mathrm{sto}}$, mais à identifier les facteurs qui expliquent l'apparition et l'amplitude de l'écart avec le calcul déterministe.
+
+La base complète contient 51\,840 configurations issues d'un même portefeuille central. La structure du portefeuille initial est donc maintenue, tandis que les différentes hypothèses sélectionnées dans le chapitre précédent sont combinées afin de couvrir un ensemble suffisamment large de situations.
+
+Le modèle appris dans ce cadre doit ainsi être interprété comme une approximation du comportement de SALLTO sur le domaine couvert par les sensibilités réalisées. Il ne s'agit pas d'établir une relation actuarielle universelle entre les neuf variables et le \textit{Best Estimate}, mais de modéliser les relations produites par le modèle ALM pour le portefeuille et les hypothèses considérés.
+
+
 \subsection{Pourquoi le machine learning est adapté à ce contexte}
-\subsection{Positionnement par rapport aux approche traditionnelles}
+
+Le choix de méthodes de machine learning est principalement motivé par la nature de la relation que l'on cherche à représenter. Le \textit{Best Estimate} stochastique résulte d'une succession de mécanismes dépendant à la fois de l'environnement économique, des caractéristiques des contrats, du comportement des assurés et des décisions prises par l'assureur.
+
+Dans SALLTO, ces mécanismes interviennent de manière successive au cours de la projection. L'évolution des marchés modifie la valeur et le rendement des actifs. La situation financière obtenue influence ensuite les possibilités de participation aux bénéfices, les réalisations éventuelles de plus-values ou encore les réallocations d'actifs. Ces décisions peuvent à leur tour modifier le comportement des assurés, notamment les rachats, et donc les flux futurs du portefeuille.
+
+Il n'existe donc pas nécessairement de relation analytique simple permettant d'écrire directement :
+
+\begin{equation}
+    Y =
+    f(
+    \text{taux},
+    \text{spread},
+    \text{volatilités},
+    \text{TMG},
+    \ldots
+    ).
+\end{equation}
+
+Le machine learning présente l'intérêt de ne pas imposer a priori une forme fonctionnelle unique à cette relation. Le modèle apprend directement, à partir des simulations disponibles, la structure permettant de relier les variables explicatives à l'écart de valorisation.
+
+Cette propriété est particulièrement intéressante dans le cadre de l'assurance vie, où les effets de certaines variables peuvent dépendre du niveau pris par d'autres variables. Par exemple, l'impact d'une garantie financière peut dépendre de l'environnement de taux dans lequel se trouve le portefeuille. De même, la volatilité d'un actif ne produit pas nécessairement les mêmes effets selon le niveau de richesse disponible ou les caractéristiques du passif.
+
+Ces mécanismes peuvent conduire à des \textbf{interactions} entre variables. Dans un modèle purement additif, l'effet d'une variable $X_j$ est supposé indépendant des autres variables. Une telle structure peut être représentée par :
+
+\begin{equation}
+    f(\mathbf{x})
+    =
+    \beta_0
+    +
+    \beta_1 x_1
+    +
+    \cdots
+    +
+    \beta_p x_p.
+\end{equation}
+
+Dans cette formulation, une variation d'une unité de $x_j$ produit toujours un effet égal à $\beta_j$, quelles que soient les valeurs prises par les autres caractéristiques du portefeuille.
+
+Cette hypothèse peut devenir restrictive lorsqu'un mécanisme ne se déclenche qu'à partir d'un certain niveau, ou lorsque l'effet d'une variable dépend de la situation économique globale. Il serait alors nécessaire d'introduire explicitement des termes d'interaction ou des transformations non linéaires, par exemple :
+
+\begin{equation}
+    f(\mathbf{x})
+    =
+    \beta_0
+    +
+    \beta_1 x_1
+    +
+    \beta_2 x_2
+    +
+    \beta_3 x_1 x_2
+    +
+    \beta_4 x_1^2
+    + \cdots
+\end{equation}
+
+Le principal problème réside alors dans le choix de ces transformations. Lorsque le nombre de variables augmente, le nombre d'interactions potentielles augmente rapidement et leur sélection devient difficile sans connaissance préalable de la forme exacte de la relation.
+
+Les modèles fondés sur les arbres de décision permettent au contraire de détecter automatiquement certaines de ces structures à partir des données. Ils sont capables de segmenter l'espace des variables explicatives et d'identifier des comportements différents selon les zones considérées.
+
+La taille de la base constitue également un élément favorable à l'utilisation de ces méthodes. Les 51\,840 observations disponibles fournissent un volume de données permettant d'estimer des modèles plus flexibles qu'une simple régression paramétrique. Cette base présente par ailleurs un caractère contrôlé : chaque observation est issue d'un même portefeuille central et les différences entre observations proviennent directement des sensibilités appliquées aux variables retenues.
+
+Le machine learning présente enfin un intérêt particulier au regard du deuxième objectif du mémoire : l'explication des écarts. L'enjeu n'est pas seulement d'obtenir une fonction $\widehat{f}$ présentant une erreur prédictive faible. Il s'agit également de déterminer quelles variables sont déterminantes dans la prédiction et dans quel sens elles interviennent.
+
+Cette exigence conduit à distinguer deux dimensions de la qualité d'un modèle :
+
+\begin{itemize}[noitemsep,topsep=2pt]
+    \item sa \textbf{performance prédictive}, c'est-à-dire sa capacité à reproduire les valeurs obtenues avec SALLTO sur des observations non utilisées pour son apprentissage ;
+    \item son \textbf{explicabilité}, c'est-à-dire la capacité à comprendre les facteurs conduisant aux prédictions obtenues.
+\end{itemize}
+
+Les deux ne sont pas nécessairement équivalentes. Un modèle simple peut être très facilement interprétable mais manquer de flexibilité. À l'inverse, un modèle plus complexe peut présenter une excellente capacité prédictive tout en rendant plus difficile la compréhension directe de son fonctionnement.
+
+Cette problématique est particulièrement importante dans le cadre du présent mémoire puisque l'objectif principal est précisément de rationaliser les différences entre les deux méthodes de calcul du \textit{Best Estimate}. Un modèle performant mais totalement inexploitable pour comprendre l'origine de ces différences ne répondrait donc que partiellement à la problématique.
+
+Les méthodes d'explicabilité, et notamment la méthode SHAP utilisée ultérieurement, permettront de compléter l'analyse des modèles non linéaires afin de mesurer la contribution des différentes variables aux prédictions obtenues.
+
+
+\subsection{Positionnement par rapport aux approches traditionnelles}
+
+Le recours au machine learning ne doit pas être interprété comme une volonté de remplacer les modèles ALM ou les projections stochastiques utilisées dans le cadre de Solvabilité~II.
+
+Dans cette étude, SALLTO constitue au contraire le \textbf{modèle de référence}. Les valeurs utilisées pour entraîner les modèles de machine learning sont directement issues de ses projections. Le modèle statistique apprend donc à reproduire certaines relations générées par SALLTO ; il ne se substitue pas aux mécanismes actuariels, financiers et comptables qu'il contient.
+
+Cette distinction est fondamentale. La projection stochastique demeure nécessaire pour obtenir une valorisation complète intégrant explicitement les différents scénarios économiques ainsi que les interactions entre l'actif et le passif. Le machine learning constitue ici un \textbf{outil complémentaire}, construit à partir des résultats du modèle ALM.
+
+Il est ainsi possible de distinguer trois niveaux d'analyse.
+
+Le premier repose sur la projection stochastique complète dans SALLTO. Il s'agit de l'approche la plus riche puisque tous les mécanismes du modèle sont simulés pour chacun des scénarios économiques. Elle constitue la référence à laquelle les autres méthodes sont comparées.
+
+Le deuxième repose sur un modèle statistique paramétrique classique. Dans le cadre de cette étude, un modèle linéaire généralisé est utilisé comme modèle de référence. Il permet de tester si l'écart étudié peut être expliqué de manière satisfaisante par une relation relativement simple et additive entre les variables.
+
+Le troisième repose sur des méthodes de machine learning non linéaires. Leur objectif est d'apporter davantage de flexibilité lorsque la structure du problème ne peut pas être correctement représentée par une relation paramétrique simple.
+
+Cette hiérarchie permet d'éviter de recourir directement à un modèle complexe sans disposer d'un point de comparaison. Le GLM joue ainsi un rôle de \textit{benchmark}. Si un modèle linéaire permettait déjà d'expliquer correctement les écarts, l'utilisation d'algorithmes plus complexes serait difficile à justifier. À l'inverse, une amélioration significative obtenue par les méthodes non linéaires apporterait des éléments en faveur de l'existence de relations plus complexes dans les résultats produits par le modèle ALM.
+
+La comparaison entre ces modèles ne portera donc pas uniquement sur leur précision. Elle permettra également d'étudier le compromis entre simplicité, performance et capacité d'explication.
+
+Le positionnement retenu peut être résumé par la chaîne suivante :
+
+\begin{equation}
+\boxed{
+\text{SALLTO}
+\longrightarrow
+\text{Base de simulations}
+\longrightarrow
+\text{Apprentissage d'un proxy}
+\longrightarrow
+\text{Analyse des facteurs d'écart}
+}
+\end{equation}
+
+Le modèle de machine learning peut ainsi être assimilé à un \textbf{métamodèle} ou à un \textbf{modèle proxy} : il apprend à approximer une sortie d'un modèle numérique plus complexe à partir d'un ensemble réduit de variables explicatives.
+
+Une fois entraîné, un tel proxy présente l'avantage de fournir une estimation pratiquement instantanée de la variable cible pour une configuration appartenant au domaine étudié. Il pourrait donc, dans un contexte opérationnel, être utilisé pour réaliser rapidement des analyses exploratoires ou identifier les configurations méritant ensuite une analyse complète avec le modèle ALM.
+
+Toutefois, cette utilisation doit rester encadrée. La qualité d'un proxy dépend directement de la base ayant servi à son apprentissage. Dans le cadre de ce mémoire, les observations proviennent d'un portefeuille central unique et d'un ensemble défini de sensibilités. Le modèle apprend donc le comportement de SALLTO sur ce domaine particulier.
+
+Il ne peut par conséquent pas être supposé valide pour un portefeuille présentant une structure très différente ou pour des niveaux de variables très éloignés de ceux présents dans la base d'apprentissage. Cette question de domaine de validité constitue une limite importante des méthodes de machine learning et sera prise en compte dans l'interprétation des résultats.
+
 
 \section{Présentation des modèles de machine learning utilisés}
+
+Afin de déterminer le niveau de complexité nécessaire pour reproduire et expliquer la variable cible, trois modèles sont étudiés. Ils ont été retenus de manière à couvrir différents niveaux de flexibilité.
+
+Le modèle linéaire généralisé constitue une référence simple et directement interprétable. Le \textit{Random Forest} introduit ensuite des relations non linéaires et des interactions à partir d'un ensemble d'arbres de décision construits indépendamment. Enfin, le \textit{XGBoost} repose sur une construction séquentielle des arbres et cherche progressivement à corriger les erreurs commises par les modèles précédents.
+
+Ces trois modèles permettront ainsi d'étudier si l'augmentation de la complexité du modèle apporte effectivement une amélioration dans la représentation de l'écart entre valorisations déterministe et stochastique.
+
+
 \subsection{Modèles de référence}
+
+Le premier modèle retenu est un modèle linéaire généralisé, ou GLM (\textit{Generalized Linear Model}). Il constitue le modèle de référence de l'étude.
+
+Les GLM généralisent la régression linéaire en permettant de relier l'espérance conditionnelle de la variable cible aux variables explicatives à travers une fonction de lien $g$ :
+
+\begin{equation}
+    g\left(
+    \mathbb{E}
+    \left[
+    Y \mid \mathbf{X}
+    \right]
+    \right)
+    =
+    \beta_0
+    +
+    \sum_{j=1}^{p}
+    \beta_j X_j.
+    \label{eq:glm}
+\end{equation}
+
+Dans le cas d'une variable cible continue et d'une fonction de lien identité, cette formulation devient :
+
+\begin{equation}
+    \mathbb{E}
+    \left[
+    Y \mid \mathbf{X}
+    \right]
+    =
+    \beta_0
+    +
+    \beta_1X_1
+    +
+    \cdots
+    +
+    \beta_pX_p.
+\end{equation}
+
+Chaque coefficient $\beta_j$ représente alors l'effet associé à la variable $X_j$, toutes choses égales par ailleurs.
+
+Cette propriété constitue l'un des principaux avantages du GLM dans le cadre de ce mémoire. Le signe d'un coefficient permet d'identifier le sens de la relation entre une variable et la cible, tandis que son amplitude apporte une information sur l'importance de cette relation, sous réserve de tenir compte de l'échelle des différentes variables.
+
+Le modèle constitue donc une première approche particulièrement transparente du problème.
+
+La simplicité du GLM constitue cependant également sa principale limite. En l'absence de termes supplémentaires, il suppose que les effets des différentes variables sont additifs et que la relation avec le prédicteur linéaire peut être décrite à partir d'une forme prédéterminée.
+
+Les interactions doivent notamment être introduites explicitement. Pour représenter une interaction entre deux variables $X_1$ et $X_2$, il faudrait par exemple écrire :
+
+\begin{equation}
+    Y
+    =
+    \beta_0
+    +
+    \beta_1X_1
+    +
+    \beta_2X_2
+    +
+    \beta_3 X_1X_2
+    +
+    \varepsilon.
+\end{equation}
+
+De la même manière, une relation non linéaire nécessite l'introduction volontaire de transformations telles que $X^2$, $\log(X)$ ou d'autres fonctions adaptées.
+
+Dans une problématique où la forme exacte des interactions produites par un modèle ALM n'est pas connue à l'avance, cette contrainte peut limiter la capacité du GLM à représenter l'ensemble des comportements observés.
+
+Le GLM constitue néanmoins un benchmark essentiel. Il permet de déterminer si la complexité supplémentaire introduite par les méthodes non linéaires est réellement nécessaire. Les performances des modèles plus complexes devront donc être analysées relativement à cette référence.
+
+
 \subsection{Modèles non linéaires}
-\subsection{Avantages et limites de chaque modèles dans le cadre d'étude}
+
+\subsubsection{Le Random Forest}
+
+Le \textit{Random Forest}, ou forêt aléatoire, est une méthode d'apprentissage supervisé reposant sur l'agrégation d'un grand nombre d'arbres de décision.
+
+Un arbre de décision construit progressivement une partition de l'espace des variables explicatives. À chaque nœud, une variable et un seuil sont sélectionnés afin de diviser les observations en deux groupes aussi homogènes que possible vis-à-vis de la variable cible.
+
+Pour une variable $X_j$ et un seuil $s$, la séparation peut être représentée par :
+
+\begin{equation}
+    R_1(j,s)
+    =
+    \left\{
+    \mathbf{x}:x_j \leq s
+    \right\},
+    \qquad
+    R_2(j,s)
+    =
+    \left\{
+    \mathbf{x}:x_j > s
+    \right\}.
+\end{equation}
+
+Dans un problème de régression, le couple $(j,s)$ est choisi de manière à minimiser l'erreur au sein des deux régions créées.
+
+Ce mécanisme est ensuite reproduit récursivement sur chacune des sous-régions. La prédiction finale d'un arbre correspond à la moyenne des observations appartenant à la feuille terminale dans laquelle se trouve la nouvelle observation.
+
+Un arbre individuel possède une grande flexibilité mais peut être fortement dépendant de l'échantillon ayant servi à sa construction. Il présente donc un risque de variance élevée et de surapprentissage.
+
+Le \textit{Random Forest} cherche à réduire cette instabilité en combinant plusieurs arbres.
+
+Deux mécanismes principaux sont utilisés.
+
+Tout d'abord, chaque arbre est entraîné sur un échantillon bootstrap de la base d'apprentissage, c'est-à-dire un échantillon obtenu par tirage avec remise parmi les observations disponibles.
+
+Ensuite, à chaque séparation d'un arbre, seule une fraction aléatoire des variables explicatives est proposée pour déterminer la meilleure coupure. Ce mécanisme réduit la corrélation entre les différents arbres et évite qu'une même variable dominante conduise systématiquement à des arbres très similaires.
+
+Pour une forêt composée de $B$ arbres $T_b$, la prédiction finale s'écrit :
+
+\begin{equation}
+    \widehat{f}_{RF}(\mathbf{x})
+    =
+    \frac{1}{B}
+    \sum_{b=1}^{B}
+    T_b(\mathbf{x}).
+    \label{eq:rf}
+\end{equation}
+
+La moyenne des prédictions permet ainsi de réduire la variance associée à un arbre individuel.
+
+Dans le cadre de ce mémoire, le \textit{Random Forest} présente plusieurs propriétés intéressantes. Il ne nécessite pas de spécifier à l'avance la forme de la relation entre les variables explicatives et la cible. Il peut également faire apparaître naturellement des interactions entre variables puisque les différentes séparations d'un arbre sont conditionnelles aux séparations effectuées précédemment.
+
+Il constitue ainsi une première méthode permettant de tester si l'écart entre les deux \textit{Best Estimate} présente une structure plus complexe que celle représentable par un GLM.
+
+En contrepartie, l'interprétation du modèle devient moins immédiate. Contrairement au GLM, il n'existe pas un coefficient directement associé à chaque variable. Des méthodes spécifiques doivent être mobilisées pour mesurer l'importance et l'effet des caractéristiques sur les prédictions.
+
+
+\subsubsection{Le XGBoost}
+
+Le deuxième modèle non linéaire retenu est l'\textit{Extreme Gradient Boosting}, généralement appelé XGBoost.
+
+Comme le \textit{Random Forest}, XGBoost repose sur des arbres de décision. La logique de construction est toutefois fondamentalement différente.
+
+Dans une forêt aléatoire, les arbres sont construits de manière largement indépendante avant que leurs prédictions soient moyennées. Dans une méthode de \textit{boosting}, les arbres sont au contraire construits successivement. Chaque nouvel arbre vise à améliorer les erreurs commises par l'ensemble des arbres précédents.
+
+La prédiction d'un modèle composé de $K$ arbres peut s'écrire :
+
+\begin{equation}
+    \widehat{y}_i
+    =
+    \sum_{k=1}^{K}
+    f_k(\mathbf{x}_i),
+    \qquad
+    f_k \in \mathcal{F},
+    \label{eq:xgb_sum}
+\end{equation}
+
+où $\mathcal{F}$ désigne l'ensemble des arbres de régression pouvant être construits.
+
+À l'étape $t$, la prédiction devient :
+
+\begin{equation}
+    \widehat{y}_i^{(t)}
+    =
+    \widehat{y}_i^{(t-1)}
+    +
+    f_t(\mathbf{x}_i).
+\end{equation}
+
+Le nouvel arbre $f_t$ n'est donc pas construit indépendamment. Il est choisi afin d'améliorer la fonction objectif à partir des erreurs encore présentes après les étapes précédentes.
+
+La fonction objectif utilisée par XGBoost peut être représentée sous la forme :
+
+\begin{equation}
+    \mathcal{L}^{(t)}
+    =
+    \sum_{i=1}^{n}
+    l
+    \left(
+    y_i,
+    \widehat{y}_i^{(t-1)}
+    +
+    f_t(\mathbf{x}_i)
+    \right)
+    +
+    \Omega(f_t),
+    \label{eq:xgb_obj}
+\end{equation}
+
+où $l$ représente la fonction de perte utilisée pour mesurer l'erreur prédictive et $\Omega$ un terme de régularisation contrôlant la complexité du nouvel arbre.
+
+Une formulation classique du terme de régularisation est :
+
+\begin{equation}
+    \Omega(f)
+    =
+    \gamma T
+    +
+    \frac{\lambda}{2}
+    \sum_{j=1}^{T} w_j^2,
+\end{equation}
+
+où $T$ correspond au nombre de feuilles de l'arbre et $w_j$ à la valeur associée à la feuille $j$.
+
+Le paramètre $\gamma$ pénalise donc l'ajout de feuilles supplémentaires, tandis que $\lambda$ limite l'amplitude des valeurs attribuées aux feuilles. Ce mécanisme permet de rechercher un compromis entre amélioration de la prédiction et complexité du modèle.
+
+Une autre caractéristique importante du boosting est le \textit{learning rate}. Plutôt que d'ajouter intégralement chaque nouvel arbre à la prédiction, sa contribution peut être réduite par un paramètre $\eta$ :
+
+\begin{equation}
+    \widehat{y}_i^{(t)}
+    =
+    \widehat{y}_i^{(t-1)}
+    +
+    \eta f_t(\mathbf{x}_i),
+    \qquad
+    0 < \eta \leq 1.
+\end{equation}
+
+Une valeur faible de $\eta$ conduit généralement à utiliser davantage d'arbres, chacun corrigeant plus progressivement les erreurs du modèle.
+
+XGBoost combine ainsi plusieurs propriétés particulièrement adaptées à la problématique étudiée : il permet de représenter des relations non linéaires, de prendre en compte des interactions entre variables et d'introduire différents mécanismes de régularisation afin de contrôler le surapprentissage.
+
+Sa flexibilité a cependant un coût en termes d'interprétabilité. Le résultat final est la combinaison d'un grand nombre d'arbres et il devient difficile de relier directement une prédiction à une relation simple entre les variables d'entrée et la cible.
+
+Cette limite est particulièrement importante dans le cadre du mémoire, puisque l'explication des écarts constitue un objectif au moins aussi important que leur prédiction. L'utilisation ultérieure de valeurs SHAP permettra donc de compléter l'analyse de XGBoost en quantifiant la contribution de chaque variable aux prédictions du modèle.
+
+
+\subsection{Avantages et limites de chaque modèle dans le cadre d'étude}
+
+Les trois modèles retenus présentent des niveaux de complexité et d'interprétabilité différents. Leur comparaison doit donc dépasser la seule mesure de leur précision prédictive.
+
+Le GLM présente l'avantage majeur de sa transparence. La relation entre les variables et la cible peut être directement étudiée à travers les coefficients estimés. Il constitue également un modèle rapide à entraîner et relativement peu exposé au surapprentissage lorsque le nombre de variables reste limité.
+
+Sa principale faiblesse réside dans les hypothèses imposées à la relation entre les variables. Si les mécanismes issus du modèle ALM présentent des non-linéarités, des seuils ou des interactions importantes, une structure linéaire peut ne pas être suffisamment flexible.
+
+Le \textit{Random Forest} permet de lever une grande partie de ces contraintes. Sa construction à partir d'arbres lui permet de représenter des comportements non linéaires sans nécessiter de transformation préalable des variables. Le mécanisme de bootstrap et l'agrégation d'un grand nombre d'arbres limitent par ailleurs l'instabilité d'un arbre de décision individuel.
+
+Son fonctionnement devient toutefois moins directement interprétable. De plus, les prédictions des arbres reposent sur des partitions de valeurs observées lors de l'apprentissage. Leur capacité à extrapoler en dehors du domaine de données couvert par la base est donc limitée.
+
+XGBoost possède généralement une flexibilité encore plus importante. La construction séquentielle permet de concentrer progressivement l'apprentissage sur les observations les plus difficiles à reproduire. Les nombreux paramètres de régularisation permettent également de contrôler finement la complexité du modèle.
+
+Cette flexibilité augmente toutefois le nombre d'hyperparamètres à déterminer et donc le risque de surapprentissage lorsque leur calibration est insuffisante. Elle accentue également l'effet ``boîte noire'' du modèle, ce qui rend nécessaire l'utilisation d'outils d'explicabilité complémentaires.
+
+Le tableau \ref{tab:comparaison_modeles} synthétise les principales caractéristiques des trois modèles dans le contexte de l'étude.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Comparaison des modèles retenus dans le cadre de l'étude}
+\label{tab:comparaison_modeles}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{p{2.3cm} p{3cm} p{3cm} p{3cm} p{3cm}}
+\hline
+\textbf{Modèle}
+&
+\textbf{Principaux avantages}
+&
+\textbf{Principales limites}
+&
+\textbf{Interprétabilité}
+&
+\textbf{Rôle dans l'étude}
+\\
+\hline
+
+GLM
+&
+Simplicité, rapidité, coefficients directement exploitables
+&
+Relations principalement linéaires et additives, interactions à spécifier
+&
+Élevée
+&
+Modèle de référence permettant d'évaluer l'intérêt d'une complexité supplémentaire
+\\
+
+Random Forest
+&
+Non-linéarités, interactions automatiques, réduction de la variance par agrégation
+&
+Extrapolation limitée, perte d'interprétabilité par rapport au GLM
+&
+Intermédiaire
+&
+Premier modèle non linéaire permettant de représenter des relations complexes
+\\
+
+XGBoost
+&
+Grande flexibilité, interactions, apprentissage séquentiel et régularisation
+&
+Nombreux hyperparamètres, risque de surapprentissage, fonctionnement moins transparent
+&
+Faible directement, améliorée par SHAP
+&
+Modèle flexible destiné à rechercher une forte capacité de reproduction tout en permettant une analyse a posteriori
+\\
+
+\hline
+\end{tabular}
+\end{table}
+
+Une attention particulière doit enfin être portée à la notion de \textbf{domaine de validité}. Les données utilisées dans ce mémoire ne constituent pas un échantillon aléatoire représentatif de l'ensemble des portefeuilles d'assurance vie. Elles proviennent d'un portefeuille central auquel ont été appliquées différentes sensibilités.
+
+Les modèles appris doivent donc avant tout être considérés comme valides à l'intérieur du domaine couvert par ces sensibilités. Ce point est particulièrement important pour les méthodes fondées sur les arbres, dont la capacité d'extrapolation en dehors des valeurs rencontrées pendant l'apprentissage est faible.
+
+De la même manière, les relations mises en évidence par les modèles ne doivent pas être interprétées comme des relations universelles. Elles décrivent le comportement de SALLTO compte tenu du portefeuille, du GSE, des hypothèses de comportement et des règles de gestion retenues dans cette étude.
+
+Cette dépendance ne constitue pas nécessairement une faiblesse de l'approche. Elle correspond à la nature même d'un métamodèle : son objectif est de reproduire et d'expliquer le comportement d'un modèle complexe sur un domaine déterminé.
+
+Dans les sections suivantes, les différents modèles seront entraînés dans des conditions identiques puis comparés à l'aide de plusieurs indicateurs de performance. Le coefficient de détermination $R^2$, la MAE et la RMSE permettront notamment d'évaluer leur capacité à reproduire la variable cible. Ces mesures seront ensuite complétées par une analyse de l'explicabilité des modèles afin de déterminer si l'amélioration éventuelle de la performance prédictive s'accompagne également d'une meilleure compréhension des facteurs à l'origine des écarts entre valorisations déterministe et stochastique.
 
 \section{Méthodologie d'apprentissage}
 \subsection{Séparation des données}

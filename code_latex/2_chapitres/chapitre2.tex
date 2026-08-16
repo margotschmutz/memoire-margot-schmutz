@@ -1,85 +1,131 @@
 \chapter{Modèle ALM interne et construction de la base de données}
 
-Ce chapitre présente le modèle ALM utilisé dans le cadre de ce mémoire ainsi que la méthodologie mise en place pour construire la base de données. Dans un premier temps, le fonctionnement général du modèle SALLTO est décrit. Dans un second temps, le portefeuille étudié et les différentes sensibilités réalisées sont présentés. Enfin, la méthode de construction de la base de données et l'automatisation des lancements sont détaillées.
-
-
-% =============================================================================
-% MODÈLE ALM
-% =============================================================================
-
 \section{Le modèle ALM interne}
 
-Au sein de Forsides, le modèle ALM utilisé s'appelle SALLTO (\textit{Solvency Asset Liability Life TOols}). Il s'agit d'un outil développé et codé en interne en C\#. Ce modèle permet de représenter l'évolution dans le temps d'une compagnie d'assurance vie, en intégrant explicitement les interactions entre l'actif et le passif à partir de scénarios économiques.
+Dans le cadre de cette étude, les différentes valorisations du \textit{Best Estimate} sont obtenues à l'aide du modèle ALM interne de Forsides, appelé SALLTO (\textit{Solvency Assets Liabilities Life TOol}). Développé en interne en C\#, cet outil permet de projeter dans le temps l'évolution d'une compagnie d'assurance vie en modélisant conjointement son actif et son passif ainsi que les interactions entre ces deux composantes.
 
-L'objectif d'un modèle ALM est de projeter conjointement les actifs détenus par l'assureur et les engagements envers les assurés. Cette projection permet notamment de prendre en compte les interactions entre les conditions économiques, les caractéristiques du portefeuille, les comportements des assurés et la politique de gestion de la compagnie.
+L'intérêt d'une telle approche est de représenter les mécanismes propres à l'assurance vie, pour lesquels l'évolution du passif dépend directement de la situation financière de l'assureur. Les conditions économiques influencent en effet la valeur et le rendement des actifs, mais également les décisions de gestion de l'assureur, telles que le niveau de participation aux bénéfices servi, la réalisation de plus-values ou encore les réallocations d'actifs. Ces décisions peuvent à leur tour modifier le comportement des assurés, notamment en matière de rachats.
 
-Pour fonctionner, SALLTO nécessite un fichier d'entrée dans lequel sont renseignées différentes hypothèses. Ces hypothèses concernent :
+SALLTO permet ainsi de projeter les flux, les bilans et les comptes de résultat d'une compagnie d'assurance vie jusqu'à l'extinction du portefeuille. Les projections peuvent être réalisées de manière déterministe ou stochastique, selon la nature des scénarios économiques utilisés.
 
-\begin{itemize}
-    \item les caractéristiques de l'actif ;
-    \item les caractéristiques du passif ;
-    \item les hypothèses de comportement des assurés ;
+Le modèle est alimenté par plusieurs catégories de données et d'hypothèses :
+\begin{itemize}[noitemsep,topsep=2pt]
+    \item les caractéristiques du portefeuille d'actifs ;
+    \item les caractéristiques du portefeuille de passifs ;
+    \item les hypothèses de comportement des assurés, notamment les rachats ;
     \item les tables de mortalité ;
-    \item la politique de gestion de la compagnie ;
-    \item les scénarios économiques utilisés pour les projections.
+    \item les règles de gestion de l'assureur ;
+    \item les scénarios économiques utilisés pour faire évoluer les différentes variables financières.
 \end{itemize}
 
-Les scénarios économiques sont générés indépendamment par un générateur de scénarios économiques, appelé GSE. Ils sont ensuite intégrés dans le fichier d'entrée de SALLTO et servent de base aux différentes projections réalisées par le modèle.
+Les scénarios économiques sont produits indépendamment de SALLTO par le Générateur de Scénarios Économiques (GSE) développé par Forsides. Ils sont ensuite fournis au modèle ALM afin de faire évoluer l'environnement financier au cours de la projection.
 
-La Figure~\ref{fig:schema_sallto} présente de manière synthétique le fonctionnement général de SALLTO et les différentes données nécessaires à son utilisation.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.9\textwidth]
-    {images/2_chapitres/chapitre2/Schema_SALLTO.png}
-    \caption{Schéma général de fonctionnement de SALLTO}
-    \label{fig:schema_sallto}
-\end{figure}
+Cette articulation entre le GSE et SALLTO est particulièrement importante dans le cadre de ce mémoire. Pour une même configuration initiale du portefeuille, une projection déterministe permet d'obtenir le $BE_{\mathrm{det}}$, tandis qu'une projection sur un ensemble de scénarios stochastiques permet d'obtenir le $BE_{\mathrm{sto}}$. L'étude de l'écart entre ces deux valorisations repose donc directement sur le fonctionnement conjoint de ces deux outils.
 
 
 \subsection{Le générateur de scénarios économiques}
 
-Le générateur de scénarios économiques permet de produire un ensemble de trajectoires possibles pour les principales variables économiques et financières utilisées dans le modèle. Ces trajectoires concernent notamment les taux d'intérêt, les actions et l'immobilier.
+Un Générateur de Scénarios Économiques (GSE) a pour objectif de simuler l'évolution future des principales variables économiques et financières susceptibles d'affecter le portefeuille d'un assureur. Le GSE développé par Forsides génère notamment des trajectoires pour :
+\begin{itemize}[noitemsep,topsep=2pt]
+    \item les taux d'intérêt nominaux et réels ;
+    \item les marchés actions ;
+    \item l'immobilier ;
+    \item l'inflation ;
+    \item les spreads de crédit.
+\end{itemize}
 
-Le GSE est calibré à partir de données issues des marchés financiers. Il génère ensuite plusieurs scénarios représentant différentes évolutions possibles de l'environnement économique sur l'horizon de projection.
+Ces variables étant liées entre elles, le GSE permet de générer des trajectoires économiques cohérentes sur l'ensemble de l'horizon de projection. Ces trajectoires sont ensuite utilisées dans SALLTO pour déterminer, scénario par scénario, l'évolution des actifs et des passifs ainsi que les actions de management qui en découlent.
 
-Ces scénarios sont utilisés dans les calculs stochastiques de SALLTO. Pour chaque scénario économique, le modèle projette l'évolution de l'actif, du passif et des décisions de gestion. La moyenne des résultats obtenus sur l'ensemble des scénarios permet ensuite de déterminer le Best Estimate stochastique.
+Deux cadres de projection peuvent être distingués : le \textit{monde réel} et l'univers \textit{risque neutre}. Dans une projection en monde réel, les distributions des variables économiques cherchent à reproduire les évolutions susceptibles d'être effectivement observées. Le calibrage peut alors reposer sur des données historiques, des anticipations de marché ou des hypothèses à dire d'experts. Ce type de projection est notamment adapté aux études prospectives et aux analyses de risque.
 
-Dans le cadre de cette étude, plusieurs paramétrages du GSE sont utilisés afin de faire varier la courbe des taux, la volatilité des taux et la volatilité des actions.
+Dans un univers risque neutre, utilisé pour les valorisations économiques sous Solvabilité~II, les scénarios doivent être \textit{Market Consistent}, c'est-à-dire cohérents avec les prix des instruments financiers observés à la date de valorisation. Sous la probabilité risque neutre $\mathbb{Q}$, les actifs actualisés sont des martingales. Pour un actif de valeur actualisée $\widetilde{S}_t$, cette propriété s'écrit :
+
+\begin{equation}
+    \mathbb{E}^{\mathbb{Q}}\left[\widetilde{S}_T\right] = S_0.
+\end{equation}
+
+Ainsi, le rendement espéré d'un actif risqué ne comporte plus de prime de risque : après actualisation, son espérance est égale à sa valeur initiale. Cette propriété permet notamment d'obtenir, par simulation de Monte-Carlo, une valorisation cohérente avec les prix de marché.
+
+Dans le cadre du GSE utilisé, les différentes classes d'actifs reposent sur des modèles stochastiques adaptés à leur dynamique.
+
+\subsubsection*{Modélisation des taux d'intérêt}
+
+Les taux d'intérêt sont modélisés à l'aide du modèle de Hull--White à un facteur, extension du modèle de Vasicek. La dynamique du taux court $r_t$ s'écrit :
+
+\begin{equation}
+    dr_t = \left(\theta(t)-a r_t\right)dt + \sigma_r dW_t,
+\end{equation}
+
+où :
+\begin{itemize}[noitemsep,topsep=2pt]
+    \item $r_t$ représente le taux court à la date $t$ ;
+    \item $a$ représente la vitesse de retour à la moyenne ;
+    \item $\sigma_r$ représente la volatilité des taux ;
+    \item $\theta(t)$ est une fonction déterministe permettant d'ajuster le modèle à la courbe des taux observée à la date initiale ;
+    \item $W_t$ est un mouvement brownien.
+\end{itemize}
+
+L'un des principaux intérêts du modèle de Hull--White est sa capacité à reproduire la courbe des taux initiale tout en conservant une formulation suffisamment simple pour permettre son calibrage sur des instruments de marché, notamment des swaptions. Il autorise par ailleurs l'apparition de taux négatifs, propriété utile pour représenter un spectre suffisamment large d'environnements économiques.
+
+
+\subsubsection*{Modélisation des actions et de l'immobilier}
+
+Les indices actions et immobiliers sont modélisés selon une dynamique de type Black--Scholes. Pour un indice $S_t$, celle-ci peut s'écrire :
+
+\begin{equation}
+    \frac{dS_t}{S_t}
+    =
+    \mu\,dt+\sigma_S\,dW_t,
+\end{equation}
+
+où $\mu$ représente la tendance de l'indice, $\sigma_S$ sa volatilité et $W_t$ un mouvement brownien.
+
+La solution de cette équation peut notamment s'écrire, sur un pas de temps $\Delta t$ :
+
+\begin{equation}
+    S_{t+\Delta t}
+    =
+    S_t
+    \exp\left[
+        \left(\mu-\frac{\sigma_S^2}{2}\right)\Delta t
+        +\sigma_S\sqrt{\Delta t}\,Z
+    \right],
+    \qquad Z\sim\mathcal{N}(0,1).
+\end{equation}
+
+Dans un cadre risque neutre, la dérive est déterminée de manière à respecter la cohérence avec les prix de marché. Les volatilités sont quant à elles calibrées à partir de données observées sur les marchés financiers.
+
+Dans le cadre de ce mémoire, le GSE intervient directement dans la construction de la base de données. La courbe des taux ainsi que certains paramètres de volatilité sont modifiés afin de créer différents environnements économiques. Pour chaque paramétrage, les scénarios correspondants sont ensuite transmis à SALLTO afin de réaliser les projections déterministes et stochastiques.
 
 
 \subsection{Fonctionnement de SALLTO}
 
-À partir du fichier d'entrée, des scénarios économiques et des tables de mortalité, SALLTO projette l'évolution du portefeuille sur l'ensemble de l'horizon retenu.
+Une fois les hypothèses initiales et les scénarios économiques renseignés, SALLTO projette conjointement l'actif et le passif du portefeuille. Le pas de projection est annuel et les différentes opérations sont répétées jusqu'à la fin de l'horizon de projection.
 
-Pour chaque pas de temps et pour chaque scénario économique, le modèle simule notamment :
+À la date initiale, le modèle est alimenté par la situation du portefeuille à la date de valorisation : bilan, provisions mathématiques, caractéristiques des contrats et portefeuille d'actifs. À chaque pas de temps, le modèle réalise ensuite successivement les principales opérations suivantes :
 
-\begin{itemize}
-    \item l'évolution de la valeur des actifs ;
-    \item les produits financiers générés par le portefeuille ;
-    \item les prestations versées aux assurés ;
-    \item les rachats ;
-    \item la participation aux bénéfices ;
-    \item les décisions de gestion prises par l'assureur ;
-    \item l'évolution des provisions mathématiques.
-\end{itemize}
+\begin{enumerate}[noitemsep,topsep=2pt]
+    \item \textbf{Vieillissement des actifs.} Les différents actifs évoluent en fonction de leur nature et des trajectoires fournies par le GSE. Les obligations génèrent leurs coupons, sont amorties et éventuellement remboursées à maturité, tandis que la valeur des actifs non amortissables, notamment les actions et l'immobilier, évolue selon les indices économiques simulés.
 
-Les interactions entre l'actif et le passif sont prises en compte au cours de chaque projection. Par exemple, le rendement des actifs influence la capacité de l'assureur à revaloriser les contrats. En retour, le niveau de revalorisation peut modifier le comportement de rachat des assurés et donc les flux futurs du passif.
+    \item \textbf{Vieillissement des passifs.} Les contrats sont projetés d'une année en tenant compte notamment des décès, des arrivées à terme, des rachats, des frais et chargements ainsi que de l'évolution de l'âge et de l'ancienneté des assurés.
 
-À l'issue des projections, SALLTO produit un fichier de résultats contenant notamment les flux de trésorerie, les résultats nécessaires aux calculs Solvabilité~II ainsi que les différents éléments de valorisation du portefeuille.
+    \item \textbf{Calcul des besoins de trésorerie et opérations sur actifs.} Les encaissements et décaissements générés par l'actif et le passif sont confrontés afin de déterminer le solde de trésorerie. Lorsque cela est nécessaire, des actifs peuvent être cédés. La trésorerie disponible est ensuite réinvestie en fonction de l'allocation stratégique définie dans les règles de gestion.
 
-Dans le cadre de ce mémoire, les principaux résultats utilisés sont :
+    \item \textbf{Mise à jour des mécanismes comptables et financiers.} Les cessions obligataires peuvent notamment conduire à une dotation ou une reprise de la réserve de capitalisation. Les plus ou moins-values réalisées et latentes sont également prises en compte dans la richesse disponible de l'assureur.
 
-\begin{itemize}
-    \item le Best Estimate déterministe ;
-    \item le Best Estimate stochastique ;
-    \item l'écart entre ces deux valorisations.
-\end{itemize}
+    \item \textbf{Détermination de la participation aux bénéfices.} Le modèle détermine le taux de revalorisation cible puis les ressources permettant de le servir. La Provision pour Participation aux Bénéfices (PPB) peut être reprise ou dotée en fonction de la situation financière de l'assureur.
 
+    \item \textbf{Application des actions de management.} Si les ressources disponibles ne permettent pas d'atteindre le taux cible, le modèle peut mettre en œuvre les actions de gestion prévues dans le paramétrage, par exemple la réalisation de plus-values latentes. Le taux effectivement servi peut ainsi différer du taux cible lorsque les ressources disponibles sont insuffisantes.
 
-% =============================================================================
-% PORTEFEUILLE
-% =============================================================================
+    \item \textbf{Revalorisation des contrats et calcul des flux.} Les contrats sont revalorisés à partir du taux servi. Les différents flux d'actif et de passif sont alors déterminés et le bilan est mis à jour pour l'année suivante.
+\end{enumerate}
+
+Ce mécanisme est répété pour l'ensemble des années de projection et, dans le cas stochastique, pour chacun des scénarios économiques considérés. Le modèle permet ainsi de représenter les interactions successives entre environnement économique, richesse de l'assureur, décisions de gestion et comportement des assurés.
+
+La différence entre les valorisations déterministe et stochastique utilisées dans ce mémoire intervient essentiellement dans les scénarios économiques alimentant cette chaîne de projection. Dans le cas déterministe, une trajectoire économique unique est utilisée. Dans le cas stochastique, SALLTO reproduit cette même mécanique sur un grand nombre de trajectoires issues du GSE. Le \textit{Best Estimate} stochastique est alors obtenu par agrégation des flux actualisés obtenus sur l'ensemble des scénarios.
+
+Cette répétition du modèle ALM pour un grand nombre de scénarios explique également le coût calculatoire nettement supérieur de la valorisation stochastique. Cet écart de complexité constitue précisément l'un des éléments à l'origine de la problématique étudiée dans ce mémoire : déterminer dans quelle mesure l'information issue d'une projection déterministe, combinée aux caractéristiques économiques et contractuelles du portefeuille, permet de reproduire et d'expliquer le résultat obtenu à partir de la projection stochastique.
+
 
 \section{Description du portefeuille étudié}
 
