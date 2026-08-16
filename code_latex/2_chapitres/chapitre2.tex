@@ -83,23 +83,181 @@ Dans le cadre de ce mémoire, les principaux résultats utilisés sont :
 
 \section{Description du portefeuille étudié}
 
-% À compléter avec les informations disponibles sur le portefeuille :
-% - nature des contrats ;
-% - montant total de provisions mathématiques ;
-% - âge moyen des assurés ;
-% - ancienneté moyenne ;
-% - taux minimum garanti ;
-% - allocation d'actifs ;
-% - politique de participation aux bénéfices ;
-% - hypothèses de rachats.
 
-L'étude est réalisée sur un portefeuille d'assurance vie modélisé dans SALLTO. Le même périmètre de passif est conservé pour l'ensemble des simulations. Les différentes observations de la base de données ne correspondent donc pas à des portefeuilles totalement indépendants, mais à différentes configurations d'un même portefeuille de référence.
+La construction de la base de données nécessaire à l'étude repose sur la définition préalable d'un portefeuille central, à partir duquel seront réalisées les différentes sensibilités présentées par la suite.
 
-La configuration centrale correspond aux hypothèses retenues comme hypothèses de référence. Les autres configurations sont obtenues en faisant varier de manière contrôlée certaines caractéristiques économiques ou contractuelles autour de cette situation centrale.
+Le portefeuille retenu est un portefeuille fictif, valorisé au 31 décembre 2025. Il a été construit à partir de données de marché et d'hypothèses représentatives des caractéristiques généralement observées au sein des portefeuilles d'assureurs vie. L'objectif n'est donc pas de reproduire le bilan d'un assureur particulier, mais de disposer d'un portefeuille de référence cohérent avec les pratiques du marché et suffisamment représentatif pour les besoins de l'étude.
 
-Cette méthode permet d'étudier l'impact propre de chaque variable, tout en conservant une structure de portefeuille comparable entre les différentes simulations.
+Ce portefeuille constitue le point de départ de l'ensemble des projections réalisées dans la suite du mémoire. Les résultats obtenus, et en particulier la relation mise en évidence entre le Best Estimate déterministe et le Best Estimate stochastique, restent ainsi conditionnés aux caractéristiques du portefeuille central retenu. Cette dépendance devra être prise en compte dans l'interprétation des résultats.
+
+\subsection{Portefeuille d'actifs}
+
+Le portefeuille d'actifs présenté dans cette section correspond aux actifs en représentation du fonds euro. Sa valeur nette comptable totale s'élève à 116 millions d'euros au 31 décembre 2025, tandis que sa valeur de marché atteint 113,39 millions d'euros.
+
+L'allocation a été définie de manière à reproduire la structure d'un portefeuille d'actifs représentatif d'un assureur vie. En valeur nette comptable, elle se compose de 80\,\% d'obligations à taux fixe, 10\,\% d'actions globales non long terme, 7\,\% d'immobilier et 3\,\% d'actifs monétaires.
+
+\begin{table}[H]
+    \centering
+    \caption{Allocation du portefeuille d'actifs central}
+    \label{tab:allocation_actif_central}
+    \begin{tabular}{lcc}
+        \hline
+        \textbf{Classe d'actifs} & \textbf{Allocation en VNC} & \textbf{PMVL} \\
+        \hline
+        Monétaire & 3\,\% & 0\,\% \\
+        Actions globales non long terme & 10\,\% & +30\,\% \\
+        Immobilier & 7\,\% & +10\,\% \\
+        Obligations à taux fixe & 80\,\% & -7\,\% \\
+        \hline
+        \textbf{Total} & \textbf{100\,\%} & \textbf{$\approx -2\,\%$} \\
+        \hline
+    \end{tabular}
+\end{table}
+
+Les différentes classes d'actifs présentent des niveaux de plus ou moins-values latentes distincts. Les actions présentent ainsi une plus-value latente de 30\,\% et l'immobilier de 10\,\%, tandis que la poche obligataire présente une moins-value latente de 7\,\%. Compte tenu du poids prépondérant des obligations dans l'allocation, le portefeuille présente globalement une légère moins-value latente, de l'ordre de 2\,\%.
+
+La poche obligataire représente 80\,\% de la VNC totale du portefeuille d'actifs et constitue ainsi sa principale composante. Elle est composée à 60\,\% d'obligations souveraines et à 40\,\% d'obligations corporate. Le portefeuille obligataire présente un rating moyen de A.
+
+Le spread moyen du portefeuille central est de 0,85\,\%, tandis que la duration moyenne de l'actif s'établit à 6,75. Ces caractéristiques permettent de définir l'exposition initiale du portefeuille aux principaux facteurs de risque de marché, avant application des différentes sensibilités considérées dans la suite de l'étude.
+
+\begin{table}[H]
+    \centering
+    \caption{Principales caractéristiques du portefeuille d'actifs central}
+    \label{tab:caracteristiques_actif_central}
+    \begin{tabular}{lc}
+        \hline
+        \textbf{Caractéristique} & \textbf{Valeur} \\
+        \hline
+        Valeur nette comptable & 116 M\euro \\
+        Valeur de marché & 113,39 M\euro \\
+        Part d'obligations souveraines & 60\,\% de la poche obligataire \\
+        Part d'obligations corporate & 40\,\% de la poche obligataire \\
+        Rating obligataire moyen & A \\
+        Spread moyen & 0,85\,\% \\
+        Duration moyenne de l'actif & 6,75 \\
+        Plus-value latente globale & $\approx -2\,\%$ \\
+        \hline
+    \end{tabular}
+\end{table}
 
 
+\subsection{Portefeuille de passifs}
+
+Le portefeuille de passifs a également été construit afin de reproduire les principales caractéristiques d'un portefeuille moyen d'assurance vie. Il est constitué d'un encours total de provisions mathématiques (PM) de 145 millions d'euros, réparti entre 100 millions d'euros de PM euro et 45 millions d'euros de PM en unités de compte (UC). Les supports euro représentent ainsi environ 69\,\% des PM totales, contre 31\,\% pour les UC.
+
+Afin de limiter les temps de calcul liés aux projections stochastiques, une hypothèse simplificatrice a été retenue concernant la segmentation du portefeuille. Le passif est représenté par seulement 10 model points, dont 5 associés au fonds euro et 5 aux UC. Cette réduction du nombre de model points permet d'alléger significativement les calculs tout en conservant une segmentation du portefeuille adaptée aux objectifs de l'étude.
+
+L'âge moyen des assurés du portefeuille central est de 63 ans. Les frais de gestion sur encours sont fixés à 0,40\,\% et le taux de chargement à 0,80\,\%. Ces hypothèses sont identiques pour l'ensemble des model points.
+
+Le Taux Minimum Garanti (TMG) varie en revanche selon les model points du fonds euro. Le TMG moyen, pondéré par les PM du fonds euro, s'établit à 0,29\,\%. Les contrats en UC ne présentent quant à eux aucun TMG. Les caractéristiques détaillées des différents model points, et notamment les niveaux de TMG associés, sont présentées dans le tableau ci-dessous.
+
+% À compléter avec les caractéristiques détaillées des 10 Model Points
+% \begin{table}[H]
+%     \centering
+%     \caption{Caractéristiques des Model Points du portefeuille central}
+%     \label{tab:model_points_central}
+%     ...
+% \end{table}
+
+Le taux servi retenu pour le portefeuille central est de 2,40\,\%. Le taux de participation aux bénéfices (PB) est fixé à 85\,\%.
+
+Les rachats des assurés sont décomposés en rachats structurels et en rachats conjoncturels. Les rachats structurels correspondent à un taux de 5\,\%, réparti entre 2\,\% de rachats totaux et 3\,\% de rachats partiels. Les rachats conjoncturels, qui permettent de prendre en compte l'évolution du comportement des assurés en fonction de l'environnement économique, sont paramétrés selon le niveau \og dynamique moyenne \fg{} de SALLTO.
+
+Enfin, la mortalité du portefeuille est modélisée à partir de la table TH0002 et la duration du passif du portefeuille central s'établit à 10,20.
+
+\begin{table}[H]
+    \centering
+    \caption{Principales caractéristiques du portefeuille de passifs central}
+    \label{tab:caracteristiques_passif_central}
+    \begin{tabular}{lc}
+        \hline
+        \textbf{Caractéristique} & \textbf{Valeur} \\
+        \hline
+        Provisions mathématiques totales & 145 M\euro \\
+        PM fonds euro & 100 M\euro \ (69\,\%) \\
+        PM unités de compte & 45 M\euro \ (31\,\%) \\
+        Nombre de Model Points & 10 \\
+        Âge moyen des assurés & 63 ans \\
+        TMG moyen sur les PM euro & 0,29\,\% \\
+        Taux servi & 2,40\,\% \\
+        Frais de gestion sur encours & 0,40\,\% \\
+        Taux de chargement & 0,80\,\% \\
+        Rachats structurels totaux & 2\,\% \\
+        Rachats structurels partiels & 3\,\% \\
+        Rachats conjoncturels & Dynamique moyenne \\
+        Duration du passif & 10,20 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+
+\subsection{Autres hypothèses retenues}
+
+En complément des caractéristiques propres à l'actif et au passif, différentes hypothèses économiques et de projection doivent être définies afin de constituer le scénario central.
+
+Les projections sont réalisées sous une hypothèse de run-off, c'est-à-dire sans prise en compte d'affaires nouvelles sur l'horizon de projection. Cette hypothèse est conservée aussi bien pour le portefeuille central que pour l'ensemble des sensibilités étudiées par la suite.
+
+Le Best Estimate stochastique est calculé sur un horizon de 60 ans à partir de 1\,000 simulations issues du GSE. Pour le scénario central, la volatilité des actions est fixée à 14,65\,\% et la volatilité des taux à 0,60\,\%.
+
+La courbe des taux sans risque ainsi que la VA utilisées correspondent aux données du 31 décembre 2025. De la même manière, l'ajustement symétrique appliqué au choc actions, appelé dampener, est celui observé au 31 décembre 2025 et s'élève à 7,9\,\%.
+
+Le bilan initial comporte par ailleurs une Provision pour Participation aux Excédents (PPE) de 5 millions d'euros, un capital de 9 millions d'euros ainsi qu'une réserve de capitalisation de 2 millions d'euros.
+
+À partir de l'ensemble de ces hypothèses, la Net Asset Value (NAV) du portefeuille central s'élève à 13,54 millions d'euros, pour une Risk Margin de 1,72 million d'euros et un SCR de 7,95 millions d'euros. Le taux de couverture Solvabilité II s'établit ainsi à environ 170\,\% hors prise en compte de la PPE admissible.
+
+Dans le cadre de l'étude, 60\,\% de la PPE est considérée comme admissible en fonds propres. En intégrant cette composante, le taux de couverture atteint environ 208\,\%.
+
+\begin{table}[H]
+    \centering
+    \caption{Principaux indicateurs du portefeuille central}
+    \label{tab:indicateurs_central}
+    \begin{tabular}{lc}
+        \hline
+        \textbf{Indicateur} & \textbf{Valeur} \\
+        \hline
+        NAV & 13,54 M\euro \\
+        Risk Margin & 1,72 M\euro \\
+        SCR & 7,95 M\euro \\
+        PPE & 5,00 M\euro \\
+        Part admissible de la PPE & 60\,\% \\
+        Taux de couverture hors PPE & 170\,\% \\
+        Taux de couverture avec PPE admissible & 208\,\% \\
+        \hline
+    \end{tabular}
+\end{table}
+
+
+\paragraph{Best Estimate du portefeuille central}
+
+Les deux modes de projection étudiés dans ce mémoire sont appliqués à ce même portefeuille central. Le Best Estimate obtenu à partir des projections stochastiques s'élève à 143,13 millions d'euros, contre 140,39 millions d'euros dans le cadre de la projection déterministe.
+
+L'écart entre les deux approches est ainsi égal à :
+
+\begin{equation}
+    BE_{\mathrm{sto}} - BE_{\mathrm{det}}
+    = 143{,}13 - 140{,}39
+    \approx 2{,}74 \text{ M}\euro.
+\end{equation}
+
+Toutefois, l'utilisation de l'écart en valeur absolue rend sa comparaison fortement dépendante de la taille du portefeuille considéré. Afin de disposer d'une grandeur normalisée, la variable d'intérêt retenue correspond à l'écart entre le Best Estimate stochastique et le Best Estimate déterministe rapporté au montant total des PM :
+
+\begin{equation}
+    Y =
+    \frac{BE_{\mathrm{sto}}-BE_{\mathrm{det}}}
+    {\sum PM}.
+    \label{eq:variable_cible}
+\end{equation}
+
+Pour le portefeuille central, cette variable vaut ainsi :
+
+\begin{equation}
+    Y_{\mathrm{central}}
+    =
+    \frac{143{,}13 - 140{,}39}{145}
+    \approx 1{,}89\,\%.
+\end{equation}
+
+Cette valeur constitue le niveau de référence du portefeuille central. Les différentes sensibilités appliquées dans la suite de l'étude permettront alors d'analyser l'évolution de cet écart relatif en fonction des caractéristiques du portefeuille et des hypothèses retenues.
 % =============================================================================
 % CONSTRUCTION DE LA BASE
 % =============================================================================
@@ -108,7 +266,7 @@ Cette méthode permet d'étudier l'impact propre de chaque variable, tout en con
 
 \subsection{Objectif de la base de données}
 
-L'objectif principal de ce mémoire est de comprendre et d'expliquer les mécanismes conduisant aux différences de valorisation entre un Best Estimate déterministe et un Best Estimate stochastique.
+L'objectif principal de ce mémoire est d'expliquer les mécanismes conduisant aux différences de valorisation entre un Best Estimate déterministe et un Best Estimate stochastique.
 
 L'enjeu n'est pas de comparer ces deux approches d'un point de vue normatif, mais d'analyser les facteurs qui contribuent aux écarts observés afin d'en améliorer la traçabilité, la justification et la compréhension dans un cadre réglementaire.
 
@@ -117,6 +275,7 @@ Pour répondre à cette problématique, une base de données a été construite 
 La base de données est composée de neuf variables explicatives :
 
 \begin{itemize}
+    \renewcommand{\labelitemi}{\textbullet}
     \item la courbe des taux ;
     \item le spread ;
     \item la volatilité des taux ;
@@ -140,13 +299,6 @@ La base de données adopte une approche centrée sur l'analyse de l'écart entre
     \label{eq:variable_cible}
 \end{equation}
 
-avec :
-
-\begin{itemize}
-    \item \(BE_{\mathrm{sto}}\), le Best Estimate stochastique ;
-    \item \(BE_{\mathrm{det}}\), le Best Estimate déterministe ;
-    \item \(PM_i\), les provisions mathématiques associées aux différents contrats ou groupes de contrats du portefeuille.
-\end{itemize}
 
 Le fait de rapporter l'écart à la somme des provisions mathématiques permet d'obtenir une mesure exprimée en pourcentage de la taille du portefeuille. Cette normalisation facilite la comparaison entre les différentes configurations et rend les résultats plus facilement généralisables.
 
@@ -189,6 +341,7 @@ L'objectif de ces études était d'identifier les variables ayant le plus d'impa
 Les variables initialement testées étaient les suivantes :
 
 \begin{itemize}
+    \renewcommand{\labelitemi}{\textbullet}
     \item la volatilité des taux ;
     \item la volatilité des actions ;
     \item les rachats conjoncturels ;
@@ -211,14 +364,13 @@ La courbe du 31 décembre 2021 a été retenue car elle correspond à un environ
 Afin de couvrir plusieurs environnements économiques, cinq courbes de taux sont finalement utilisées :
 
 \begin{itemize}
+    \renewcommand{\labelitemi}{\textbullet}
     \item la courbe au 31 décembre 2024 ;
     \item la courbe au 31 décembre 2023 ;
     \item la courbe au 31 décembre 2025 ;
     \item la courbe au 31 décembre 2025 augmentée de \(2{,}5\,\%\) ;
     \item la courbe au 31 décembre 2021.
 \end{itemize}
-
-La Figure~\ref{fig:courbes_taux} présente les différentes courbes retenues.
 
 \begin{figure}[H]
     \centering
@@ -228,8 +380,7 @@ La Figure~\ref{fig:courbes_taux} présente les différentes courbes retenues.
     \label{fig:courbes_taux}
 \end{figure}
 
-Les résultats des études préliminaires sont présentés dans les
-Figures~\ref{fig:sensi_1}, \ref{fig:sensi_2} et \ref{fig:sensi_3}. Ces tableaux permettent de comparer l'impact des différentes sensibilités sur les résultats du modèle.
+ Ces tableaux permettent de comparer l'impact des différentes sensibilités au 31/12/2025 sur les différentes variables testées.
 
 \begin{figure}[H]
     \centering
@@ -272,6 +423,7 @@ La variable de duration permet donc de résumer une partie de l'information port
 Les neuf variables retenues sont :
 
 \begin{enumerate}
+    \renewcommand{\labelitemi}{\textbullet}
     \item la courbe des taux ;
     \item le spread ;
     \item la volatilité des taux ;
@@ -288,7 +440,7 @@ Ces variables permettent de représenter à la fois l'environnement économique,
 
 \subsection{Amplitude des sensibilités retenues}
 
-Pour chacune des variables sélectionnées, plusieurs modalités sont définies autour d'une configuration centrale. Les amplitudes retenues sont présentées dans la Figure~\ref{fig:recap_variables}.
+Pour chacune des variables sélectionnées, plusieurs modalités sont définies autour d'une configuration centrale. 
 
 Les cellules grisées correspondent à la configuration centrale du portefeuille. Cette configuration constitue le point de référence de l'étude. Les autres modalités correspondent à des sensibilités à la hausse ou à la baisse par rapport à cette situation centrale.
 

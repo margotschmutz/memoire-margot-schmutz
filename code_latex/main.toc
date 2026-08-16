@@ -7,86 +7,82 @@
 \contentsline {chapter}{Introduction}{1}{chapter*.7}%
 \contentsline {chapter}{\numberline {1}Cadre prudentiel et réglementaire de la valorisation du Best Estimate}{3}{chapter.1}%
 \contentsline {section}{\numberline {1.1}Solvabilité II : principes, objectifs et architecture}{4}{section.1.1}%
-\contentsline {subsection}{\numberline {1.1.1}De Solvabilité I à une approche fondée sur les risques}{5}{subsection.1.1.1}%
-\contentsline {subsection}{\numberline {1.1.2}Une architecture en trois piliers}{5}{subsection.1.1.2}%
-\contentsline {subsection}{\numberline {1.1.3}Le ratio de solvabilité et la place du Best Estimate}{6}{subsection.1.1.3}%
-\contentsline {section}{\numberline {1.2}La valorisation des provisions techniques}{6}{section.1.2}%
-\contentsline {subsection}{\numberline {1.2.1}Une valorisation économique des engagements}{7}{subsection.1.2.1}%
-\contentsline {subsection}{\numberline {1.2.2}Définition réglementaire du Best Estimate}{7}{subsection.1.2.2}%
-\contentsline {subsection}{\numberline {1.2.3}Flux projetés et hypothèses de calcul}{8}{subsection.1.2.3}%
-\contentsline {section}{\numberline {1.3}Approches déterministe et stochastique}{8}{section.1.3}%
-\contentsline {subsection}{\numberline {1.3.1}Deux méthodes au service d'un même objectif prudentiel}{9}{subsection.1.3.1}%
-\contentsline {subsection}{\numberline {1.3.2}Le Best Estimate déterministe}{9}{subsection.1.3.2}%
-\contentsline {subsection}{\numberline {1.3.3}Le Best Estimate stochastique}{9}{subsection.1.3.3}%
-\contentsline {subsection}{\numberline {1.3.4}Options, garanties et valeur temps}{10}{subsection.1.3.4}%
-\contentsline {section}{\numberline {1.4}Gouvernance, validation et traçabilité des calculs}{11}{section.1.4}%
-\contentsline {subsection}{\numberline {1.4.1}Exigences de transparence et de revue}{12}{subsection.1.4.1}%
-\contentsline {subsection}{\numberline {1.4.2}Rôle de la fonction actuarielle}{12}{subsection.1.4.2}%
-\contentsline {subsection}{\numberline {1.4.3}Apport d'un modèle explicatif complémentaire}{12}{subsection.1.4.3}%
-\contentsline {section}{\numberline {1.5}Évolutions issues de la revue de Solvabilité II}{13}{section.1.5}%
-\contentsline {subsection}{\numberline {1.5.1}Un cadre révisé applicable à compter du 30 janvier 2027}{13}{subsection.1.5.1}%
-\contentsline {subsection}{\numberline {1.5.2}Introduction d'une évaluation déterministe prudente encadrée}{13}{subsection.1.5.2}%
-\contentsline {chapter}{\numberline {2}Modèle ALM interne et construction de la base de données}{15}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Le modèle ALM interne}{16}{section.2.1}%
-\contentsline {subsection}{\numberline {2.1.1}Le générateur de scénarios économiques}{18}{subsection.2.1.1}%
-\contentsline {subsection}{\numberline {2.1.2}Fonctionnement de SALLTO}{18}{subsection.2.1.2}%
-\contentsline {section}{\numberline {2.2}Description du portefeuille étudié}{19}{section.2.2}%
-\contentsline {section}{\numberline {2.3}Méthodologie de construction de la base de données}{20}{section.2.3}%
-\contentsline {subsection}{\numberline {2.3.1}Objectif de la base de données}{21}{subsection.2.3.1}%
-\contentsline {subsection}{\numberline {2.3.2}Définition de la variable cible}{21}{subsection.2.3.2}%
-\contentsline {subsection}{\numberline {2.3.3}Principe de construction des observations}{22}{subsection.2.3.3}%
-\contentsline {subsection}{\numberline {2.3.4}Études préliminaires de sensibilité}{23}{subsection.2.3.4}%
-\contentsline {subsection}{\numberline {2.3.5}Construction de la variable de duration}{25}{subsection.2.3.5}%
-\contentsline {subsection}{\numberline {2.3.6}Sélection des variables définitives}{26}{subsection.2.3.6}%
-\contentsline {subsection}{\numberline {2.3.7}Amplitude des sensibilités retenues}{26}{subsection.2.3.7}%
-\contentsline {subsection}{\numberline {2.3.8}Taille de la base de données}{26}{subsection.2.3.8}%
-\contentsline {subsection}{\numberline {2.3.9}Lancement automatisé de SALLTO}{27}{subsection.2.3.9}%
-\contentsline {chapter}{\numberline {3}Apports du machine learning pour la rationalisation des écrats}{29}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Problématique de régression dans le cadre du BE}{30}{section.3.1}%
-\contentsline {subsection}{\numberline {3.1.1}Formulation du problème}{31}{subsection.3.1.1}%
-\contentsline {subsection}{\numberline {3.1.2}Pourquoi le machine learning est adapté à ce contexte}{31}{subsection.3.1.2}%
-\contentsline {subsection}{\numberline {3.1.3}Positionnement par rapport aux approche traditionnelles}{31}{subsection.3.1.3}%
-\contentsline {section}{\numberline {3.2}Présentation des modèles de machine learning utilisés}{31}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}Modèles de référence}{32}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}Modèles non linéaires}{32}{subsection.3.2.2}%
-\contentsline {subsection}{\numberline {3.2.3}Avantages et limites de chaque modèles dans le cadre d'étude}{32}{subsection.3.2.3}%
-\contentsline {section}{\numberline {3.3}Méthodologie d'apprentissage}{32}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}Séparation des données}{33}{subsection.3.3.1}%
-\contentsline {subsection}{\numberline {3.3.2}Choix des hyperparamètres}{33}{subsection.3.3.2}%
-\contentsline {subsection}{\numberline {3.3.3}Prévention de surapprentissage}{33}{subsection.3.3.3}%
-\contentsline {section}{\numberline {3.4}Critère de performance}{33}{section.3.4}%
-\contentsline {subsection}{\numberline {3.4.1}Indices retenus}{34}{subsection.3.4.1}%
-\contentsline {subsection}{\numberline {3.4.2}Comparaison des modèles}{34}{subsection.3.4.2}%
-\contentsline {subsection}{\numberline {3.4.3}Lecture des performances}{34}{subsection.3.4.3}%
-\contentsline {chapter}{\numberline {4}Analyse des résultats et rationnalisation des écarts}{35}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Qualité de la podélisation du BE stochastique}{36}{section.4.1}%
-\contentsline {subsection}{\numberline {4.1.1}Capacité des modèles à reproduire le BE stochastique}{36}{subsection.4.1.1}%
-\contentsline {subsection}{\numberline {4.1.2}Comparaison avec le BE déterministe seul}{36}{subsection.4.1.2}%
-\contentsline {subsection}{\numberline {4.1.3}Apports du machine learning}{36}{subsection.4.1.3}%
-\contentsline {section}{\numberline {4.2}Analyse des variables explicatives majeurs}{36}{section.4.2}%
-\contentsline {subsection}{\numberline {4.2.1}Variables dominantes dans l'explication du BE stochastique}{37}{subsection.4.2.1}%
-\contentsline {subsection}{\numberline {4.2.2}Rôle du BE déterministe}{37}{subsection.4.2.2}%
-\contentsline {subsection}{\numberline {4.2.3}Impact des caractéristiques du passif}{37}{subsection.4.2.3}%
-\contentsline {section}{\numberline {4.3}Lecture des écarts BE déterministe/BE stochastique}{37}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Identification des principaux facteurs d'écarts}{38}{subsection.4.3.1}%
-\contentsline {subsection}{\numberline {4.3.2}Analyse par classification}{38}{subsection.4.3.2}%
-\contentsline {subsection}{\numberline {4.3.3}Mise en évidence des effets non linéaires}{38}{subsection.4.3.3}%
-\contentsline {section}{\numberline {4.4}Apports pour le traçabilité et la compréhension des résultats}{38}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Amélioration de la lisibilité des écarts}{39}{subsection.4.4.1}%
-\contentsline {subsection}{\numberline {4.4.2}Comtribution à la documentation des modèles}{39}{subsection.4.4.2}%
-\contentsline {subsection}{\numberline {4.4.3}Intérêts pour la gouvernance}{39}{subsection.4.4.3}%
-\contentsline {chapter}{\numberline {5}Limites, approts et perspectives}{40}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Limites de l'approche}{41}{section.5.1}%
-\contentsline {subsection}{\numberline {5.1.1}Limites liées aux données}{41}{subsection.5.1.1}%
-\contentsline {subsection}{\numberline {5.1.2}Limites des modèles de machine learning}{41}{subsection.5.1.2}%
-\contentsline {subsection}{\numberline {5.1.3}Dépendance au modèle ALM utilisé}{41}{subsection.5.1.3}%
-\contentsline {section}{\numberline {5.2}Apports opérationnels et réglementaires}{41}{section.5.2}%
-\contentsline {subsection}{\numberline {5.2.1}Aide à l'analyse des résultats}{42}{subsection.5.2.1}%
-\contentsline {subsection}{\numberline {5.2.2}Outils de compréhension complémentaire}{42}{subsection.5.2.2}%
-\contentsline {subsection}{\numberline {5.2.3}Contribution à la transparence}{42}{subsection.5.2.3}%
-\contentsline {section}{\numberline {5.3}Perspectives d'amélioration}{42}{section.5.3}%
-\contentsline {subsection}{\numberline {5.3.1}Extension à d'autres portefeuilles}{43}{subsection.5.3.1}%
-\contentsline {subsection}{\numberline {5.3.2}Intégration d'autres variables}{43}{subsection.5.3.2}%
-\contentsline {subsection}{\numberline {5.3.3}Approfondissement des méthodes d'explicabilité}{43}{subsection.5.3.3}%
-\contentsline {chapter}{\numberline {6}Conclusion}{44}{chapter.6}%
-\contentsline {chapter}{Annexes}{45}{chapter*.8}%
+\contentsline {subsection}{\numberline {1.1.1}Une architecture en trois piliers}{4}{subsection.1.1.1}%
+\contentsline {subsection}{\numberline {1.1.2}Le ratio de solvabilité et la place du Best Estimate}{4}{subsection.1.1.2}%
+\contentsline {section}{\numberline {1.2}La valorisation des provisions techniques}{4}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}Une valorisation économique des engagements}{5}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}Définition réglementaire du Best Estimate}{5}{subsection.1.2.2}%
+\contentsline {subsection}{\numberline {1.2.3}Flux projetés et hypothèses de calcul}{6}{subsection.1.2.3}%
+\contentsline {section}{\numberline {1.3}Approches déterministe et stochastique}{6}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}Deux méthodes au service d'un même objectif prudentiel}{7}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}Le Best Estimate déterministe}{7}{subsection.1.3.2}%
+\contentsline {subsection}{\numberline {1.3.3}Le Best Estimate stochastique}{7}{subsection.1.3.3}%
+\contentsline {subsection}{\numberline {1.3.4}Options, garanties et valeur temps}{8}{subsection.1.3.4}%
+\contentsline {chapter}{\numberline {2}Modèle ALM interne et construction de la base de données}{10}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Le modèle ALM interne}{11}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Le générateur de scénarios économiques}{13}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Fonctionnement de SALLTO}{13}{subsection.2.1.2}%
+\contentsline {section}{\numberline {2.2}Description du portefeuille étudié}{14}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Portefeuille d'actifs}{15}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Portefeuille de passifs}{16}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Autres hypothèses retenues}{17}{subsection.2.2.3}%
+\contentsline {paragraph}{Best Estimate du portefeuille central}{18}{table.2.4}%
+\contentsline {section}{\numberline {2.3}Méthodologie de construction de la base de données}{18}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Objectif de la base de données}{19}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Définition de la variable cible}{19}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Principe de construction des observations}{20}{subsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.3.4}Études préliminaires de sensibilité}{21}{subsection.2.3.4}%
+\contentsline {subsection}{\numberline {2.3.5}Construction de la variable de duration}{23}{subsection.2.3.5}%
+\contentsline {subsection}{\numberline {2.3.6}Sélection des variables définitives}{23}{subsection.2.3.6}%
+\contentsline {subsection}{\numberline {2.3.7}Amplitude des sensibilités retenues}{24}{subsection.2.3.7}%
+\contentsline {subsection}{\numberline {2.3.8}Taille de la base de données}{24}{subsection.2.3.8}%
+\contentsline {subsection}{\numberline {2.3.9}Lancement automatisé de SALLTO}{25}{subsection.2.3.9}%
+\contentsline {chapter}{\numberline {3}Apports du machine learning pour la rationalisation des écrats}{26}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Problématique de régression dans le cadre du BE}{27}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Formulation du problème}{28}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Pourquoi le machine learning est adapté à ce contexte}{28}{subsection.3.1.2}%
+\contentsline {subsection}{\numberline {3.1.3}Positionnement par rapport aux approche traditionnelles}{28}{subsection.3.1.3}%
+\contentsline {section}{\numberline {3.2}Présentation des modèles de machine learning utilisés}{28}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Modèles de référence}{29}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Modèles non linéaires}{29}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}Avantages et limites de chaque modèles dans le cadre d'étude}{29}{subsection.3.2.3}%
+\contentsline {section}{\numberline {3.3}Méthodologie d'apprentissage}{29}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Séparation des données}{30}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Choix des hyperparamètres}{30}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Prévention de surapprentissage}{30}{subsection.3.3.3}%
+\contentsline {section}{\numberline {3.4}Critère de performance}{30}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Indices retenus}{31}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Comparaison des modèles}{31}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Lecture des performances}{31}{subsection.3.4.3}%
+\contentsline {chapter}{\numberline {4}Analyse des résultats et rationnalisation des écarts}{32}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Qualité de la podélisation du BE stochastique}{33}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Capacité des modèles à reproduire le BE stochastique}{33}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}Comparaison avec le BE déterministe seul}{33}{subsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.1.3}Apports du machine learning}{33}{subsection.4.1.3}%
+\contentsline {section}{\numberline {4.2}Analyse des variables explicatives majeurs}{33}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Variables dominantes dans l'explication du BE stochastique}{34}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Rôle du BE déterministe}{34}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}Impact des caractéristiques du passif}{34}{subsection.4.2.3}%
+\contentsline {section}{\numberline {4.3}Lecture des écarts BE déterministe/BE stochastique}{34}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Identification des principaux facteurs d'écarts}{35}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Analyse par classification}{35}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.3.3}Mise en évidence des effets non linéaires}{35}{subsection.4.3.3}%
+\contentsline {section}{\numberline {4.4}Apports pour le traçabilité et la compréhension des résultats}{35}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Amélioration de la lisibilité des écarts}{36}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Comtribution à la documentation des modèles}{36}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}Intérêts pour la gouvernance}{36}{subsection.4.4.3}%
+\contentsline {chapter}{\numberline {5}Limites, approts et perspectives}{37}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Limites de l'approche}{38}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Limites liées aux données}{38}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Limites des modèles de machine learning}{38}{subsection.5.1.2}%
+\contentsline {subsection}{\numberline {5.1.3}Dépendance au modèle ALM utilisé}{38}{subsection.5.1.3}%
+\contentsline {section}{\numberline {5.2}Apports opérationnels et réglementaires}{38}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Aide à l'analyse des résultats}{39}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Outils de compréhension complémentaire}{39}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}Contribution à la transparence}{39}{subsection.5.2.3}%
+\contentsline {section}{\numberline {5.3}Perspectives d'amélioration}{39}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}Extension à d'autres portefeuilles}{40}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}Intégration d'autres variables}{40}{subsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.3.3}Approfondissement des méthodes d'explicabilité}{40}{subsection.5.3.3}%
+\contentsline {chapter}{\numberline {6}Conclusion}{41}{chapter.6}%
+\contentsline {chapter}{Annexes}{42}{chapter*.8}%
